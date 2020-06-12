@@ -51,6 +51,8 @@ import com.tinno.utils.DateUtil;
 import com.tinno.utils.FileUtil;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 public class MainForm extends JFrame {
 	private JTextField txt_filepath;
@@ -92,7 +94,7 @@ public class MainForm extends JFrame {
 	private long onece_second = 5 * 1000;// 5s
 
 	private JTabbedPane jTabbedpane = new JTabbedPane();// 存放选项卡的组件
-	private String[] tabNames = { "应用相关", "其他" };
+	private String[] tabNames = { "应用相关", "Monkey" };
 	private JCheckBox check_cold_install;
 	private JCheckBox check_open_after_install;
 	private final String ISTALL_PKG="com.github.uiautomator";
@@ -165,14 +167,10 @@ public class MainForm extends JFrame {
 		jTabbedpane.setMnemonicAt(0, KeyEvent.VK_0);// 设置第一个位置的快捷键为0
 
 		// 第二个标签下的JPanel
-		JPanel jpanelSecond = new JPanel();
-		jTabbedpane.addTab(tabNames[i++], null, jpanelSecond, "second");
-		jpanelSecond.setLayout(null);
+		JPanel monkeyPanel = new MonkeyPanel();
+		jTabbedpane.addTab(tabNames[i++], null, monkeyPanel, "second");
 
-		JLabel label = new JLabel("正在更新中....");
-		label.setFont(new Font("微软雅黑", Font.PLAIN, 80));
-		label.setBounds(241, 121, 546, 161);
-		jpanelSecond.add(label);
+		
 		jTabbedpane.setMnemonicAt(1, KeyEvent.VK_1);// 设置快捷键为1
 		getContentPane().add(jTabbedpane);
 		getContentPane().setLayout(new GridLayout(1, 1));
