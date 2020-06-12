@@ -12,9 +12,9 @@ public class MonkeyPanel extends JPanel {
 	public MonkeyPanel() {
 		setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("monkey更新中..");
+		JLabel lblNewLabel = new JLabel("其他更新中..");
 		lblNewLabel.setFont(new Font("宋体", Font.PLAIN, 38));
-		lblNewLabel.setBounds(59, 108, 319, 107);
+		lblNewLabel.setBounds(261, 136, 319, 107);
 		add(lblNewLabel);
 
 	}

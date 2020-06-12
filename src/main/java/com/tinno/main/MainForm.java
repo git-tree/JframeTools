@@ -94,7 +94,7 @@ public class MainForm extends JFrame {
 	private long onece_second = 5 * 1000;// 5s
 
 	private JTabbedPane jTabbedpane = new JTabbedPane();// 存放选项卡的组件
-	private String[] tabNames = { "应用相关", "Monkey" };
+	private String[] tabNames = { "应用相关", "其他" };
 	private JCheckBox check_cold_install;
 	private JCheckBox check_open_after_install;
 	private final String ISTALL_PKG="com.github.uiautomator";
