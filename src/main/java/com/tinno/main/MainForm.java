@@ -36,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -45,14 +46,16 @@ import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
+import org.jb2011.lnf.beautyeye.BeautyEyeLookAndFeelWin;
+import org.jb2011.lnf.beautyeye.ch2_tab.BETabbedPaneUI;
+import org.jb2011.lnf.beautyeye.ch6_textcoms.BEEditorPaneUI;
+
 import com.tinno.pojo.Apk;
 import com.tinno.utils.CmdUtil;
 import com.tinno.utils.DateUtil;
 import com.tinno.utils.FileUtil;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 
 public class MainForm extends JFrame {
 	private JTextField txt_filepath;
@@ -93,11 +96,11 @@ public class MainForm extends JFrame {
 	private Date stoptime;
 	private long onece_second = 5 * 1000;// 5s
 
-	private JTabbedPane jTabbedpane = new JTabbedPane();// 存放选项卡的组件
+	private static JTabbedPane jTabbedpane = new JTabbedPane();// 存放选项卡的组件
 	private String[] tabNames = { "应用相关", "其他" };
 	private JCheckBox check_cold_install;
 	private JCheckBox check_open_after_install;
-	private final String ISTALL_PKG="com.github.uiautomator";
+	private final String ISTALL_PKG = "com.github.uiautomator";
 
 	/**
 	 * Launch the application.
@@ -105,6 +108,13 @@ public class MainForm extends JFrame {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
+				try {
+					UIManager.put("RootPane.setupButtonVisible",false);
+					org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
+					BETabbedPaneUI b=new BETabbedPaneUI();
+				} catch (Exception e) {
+					// TODO exception
+				}
 				try {
 					if (CmdUtil.checkAdb() && CmdUtil.checkDevice_isconn()) {
 						MainForm frame = new MainForm();
@@ -126,6 +136,7 @@ public class MainForm extends JFrame {
 			}
 		});
 	}
+
 	/**
 	 * Create the frame.
 	 * 
@@ -148,7 +159,7 @@ public class MainForm extends JFrame {
 				}
 			}
 		});
-		setBounds(100, 100, 911, 522);
+		setBounds(100, 100, 974, 575);
 		getContentPane().setLayout(null);
 
 		/*
@@ -160,25 +171,24 @@ public class MainForm extends JFrame {
 		 */
 		int i = 0;
 		JPanel jpanelFirst = new JPanel();
+		jTabbedpane.setBackground(Color.WHITE);
 		jTabbedpane.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		// jTabbedpane.addTab(tabNames[i++],icon,creatComponent(),"first");//加入第一个页面
-		jTabbedpane.addTab(tabNames[i++], null, jpanelFirst, "first");// 加入第一个页面
-		jpanelFirst.setLayout(null);
+		jTabbedpane.addTab(tabNames[i++], null, jpanelFirst, "first");
 		jTabbedpane.setMnemonicAt(0, KeyEvent.VK_0);// 设置第一个位置的快捷键为0
 
 		// 第二个标签下的JPanel
 		JPanel monkeyPanel = new MonkeyPanel();
 		jTabbedpane.addTab(tabNames[i++], null, monkeyPanel, "second");
 
-		
 		jTabbedpane.setMnemonicAt(1, KeyEvent.VK_1);// 设置快捷键为1
 		getContentPane().add(jTabbedpane);
 		getContentPane().setLayout(new GridLayout(1, 1));
+		jpanelFirst.setLayout(null);
 
 		jsp = new JScrollPane();
+		jsp.setBounds(10, 191, 905, 259);
 		jsp.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		// 设置矩形大小.参数依次为(矩形左上角横坐标x,矩形左上角纵坐标y，矩形长度，矩形宽度)
-		jsp.setBounds(10, 191, 880, 264);
 		// 把滚动条添加到容器里面
 		jpanelFirst.add(jsp);
 
@@ -197,10 +207,10 @@ public class MainForm extends JFrame {
 		DefaultCaret caret = (DefaultCaret) txt_show.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		panel_top = new JPanel();
+		panel_top.setBounds(10, 23, 905, 45);
 		panel_top.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		panel_top.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "app选择",
 				TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_top.setBounds(10, 23, 880, 45);
 		jpanelFirst.add(panel_top);
 		panel_top.setLayout(null);
 
@@ -296,17 +306,17 @@ public class MainForm extends JFrame {
 		Border border_top = BorderFactory.createBevelBorder(2);
 
 		JPanel panel_setting = new JPanel();
+		panel_setting.setBounds(10, 91, 911, 90);
 		panel_setting.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		panel_setting.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null),
 				"\u8BBE\u7F6E\u533A", TitledBorder.LEFT, TitledBorder.TOP, null, null));
-		panel_setting.setBounds(10, 91, 880, 90);
 		jpanelFirst.add(panel_setting);
 
 		// 按钮组，让单选按钮只能选择一个
 		final ButtonGroup buttonGroup = new ButtonGroup();
 		panel_setting.setLayout(null);
 		JPanel panel_install_uninstall = new JPanel();
-		panel_install_uninstall.setBounds(10, 22, 411, 39);
+		panel_install_uninstall.setBounds(10, 22, 469, 58);
 		panel_setting.add(panel_install_uninstall);
 		panel_install_uninstall.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 
@@ -336,12 +346,12 @@ public class MainForm extends JFrame {
 		check_open_after_install = new JCheckBox("安装后打开");
 		check_open_after_install.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) {
-				//选中后判断是否安装自动点击软件
-				if(check_open_after_install.isSelected()){
-					//如果安装了
-					if(CmdUtil.check_isappInstalled(ISTALL_PKG)){
+				// 选中后判断是否安装自动点击软件
+				if (check_open_after_install.isSelected()) {
+					// 如果安装了
+					if (CmdUtil.check_isappInstalled(ISTALL_PKG)) {
 						return;
-					}else{
+					} else {
 						// 安装
 						installautoapk();
 					}
@@ -353,7 +363,7 @@ public class MainForm extends JFrame {
 		panel_install_uninstall.add(check_open_after_install);
 
 		JPanel panel_btn = new JPanel();
-		panel_btn.setBounds(417, 22, 453, 39);
+		panel_btn.setBounds(489, 22, 412, 58);
 		panel_setting.add(panel_btn);
 		panel_btn.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panel_btn.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -406,9 +416,9 @@ public class MainForm extends JFrame {
 				// 获取冷安装，打开复选框的值
 				iscoldInstall = check_cold_install.isSelected();
 				isOpen_afterinstall = check_open_after_install.isSelected();
-				if(isOpen_afterinstall){
-					//选中却没安装
-					if(!CmdUtil.check_isappInstalled(ISTALL_PKG)){
+				if (isOpen_afterinstall) {
+					// 选中却没安装
+					if (!CmdUtil.check_isappInstalled(ISTALL_PKG)) {
 						installautoapk();
 						return;
 					}
@@ -665,7 +675,7 @@ public class MainForm extends JFrame {
 		// 清空按钮点击事件
 		btn_clear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				getlocaluiapk();
+				// getlocaluiapk();
 				// CmdUtil.startAppBystartBypkg("com.qiyi.video");
 				if ("".equals(txt_show.getText())) {
 					return;
@@ -761,42 +771,44 @@ public class MainForm extends JFrame {
 		btn_start.setEnabled(true);
 		btn_stop.setEnabled(true);
 	}
-	private void installautoapk(){
+
+	private void installautoapk() {
 		// 安装
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-					try {
-						File f = new File(this.getClass().getResource("/").getPath());
-						if (CmdUtil.excuteCMDCommand("adb install " + f + "/uiautomator.apk")) {
-							Thread.sleep(500);
-							CmdUtil.startAppBystartBypkg(ISTALL_PKG);
-							Thread.sleep(1000);
-							JOptionPane.showMessageDialog(null, "请按照设备提示安装软件,并打开监听exe!", "提示",
-									JOptionPane.INFORMATION_MESSAGE);
-						}
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+				try {
+					File f = new File(this.getClass().getResource("/").getPath());
+					if (CmdUtil.excuteCMDCommand("adb install " + f + "/uiautomator.apk")) {
+						Thread.sleep(500);
+						CmdUtil.startAppBystartBypkg(ISTALL_PKG);
+						Thread.sleep(1000);
+						JOptionPane.showMessageDialog(null, "请按照设备提示安装软件,并打开监听exe!", "提示",
+								JOptionPane.INFORMATION_MESSAGE);
 					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}).start();
 	}
-	private  String getlocaluiapk(){
-		Map<String , Apk> map =new HashMap<>();
-		File f=new File("");
-		String apklocation="";
+
+	private String getlocaluiapk() {
+		Map<String, Apk> map = new HashMap<>();
+		File f = new File("");
+		String apklocation = "";
 		try {
-			File f1=new File(f.getCanonicalPath());
-			FileUtil.getApkInfos(f1,map);
-			/*if(map.isEmpty()||map.size()<=0){
-				System.out.println("empty");
-				return "";
-			}*/
+			File f1 = new File(f.getCanonicalPath());
+			FileUtil.getApkInfos(f1, map);
+			/*
+			 * if(map.isEmpty()||map.size()<=0){ System.out.println("empty");
+			 * return ""; }
+			 */
 			for (Entry<String, Apk> en : map.entrySet()) {
-				if(ISTALL_PKG.equals(en.getValue().getApkLocation())){
-					apklocation=en.getValue().getApkLocation();
-					System.out.println("路径:"+en.getValue().getApkLocation());
+				if (ISTALL_PKG.equals(en.getValue().getApkLocation())) {
+					apklocation = en.getValue().getApkLocation();
+					System.out.println("路径:" + en.getValue().getApkLocation());
 					return apklocation;
 				}
 			}
@@ -807,6 +819,7 @@ public class MainForm extends JFrame {
 		}
 		return apklocation;
 	}
+
 	public void insertDocument(String text, Color textColor)// 根据传入的颜色及文字，将文字插入文本域
 	{
 		SimpleAttributeSet set = new SimpleAttributeSet();
