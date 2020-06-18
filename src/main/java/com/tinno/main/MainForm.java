@@ -96,7 +96,7 @@ public class MainForm extends JFrame {
 	private Date stoptime;
 	private long onece_second = 5 * 1000;// 5s
 
-	private static JTabbedPane jTabbedpane = new JTabbedPane();// 存放选项卡的组件
+	private JTabbedPane jTabbedpane = new JTabbedPane();// 存放选项卡的组件
 	private String[] tabNames = { "应用相关", "其他" };
 	private JCheckBox check_cold_install;
 	private JCheckBox check_open_after_install;
@@ -111,7 +111,6 @@ public class MainForm extends JFrame {
 				try {
 					UIManager.put("RootPane.setupButtonVisible",false);
 					org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
-					BETabbedPaneUI b=new BETabbedPaneUI();
 				} catch (Exception e) {
 					// TODO exception
 				}
