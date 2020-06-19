@@ -97,7 +97,7 @@ public class MainForm extends JFrame {
 	private long onece_second = 5 * 1000;// 5s
 
 	private JTabbedPane jTabbedpane = new JTabbedPane();// 存放选项卡的组件
-	private String[] tabNames = { "应用相关", "其他" };
+	private String[] tabNames = { "应用相关", "小工具" };
 	private JCheckBox check_cold_install;
 	private JCheckBox check_open_after_install;
 	private final String ISTALL_PKG = "com.github.uiautomator";
@@ -173,11 +173,11 @@ public class MainForm extends JFrame {
 		jTabbedpane.setBackground(Color.WHITE);
 		jTabbedpane.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		// jTabbedpane.addTab(tabNames[i++],icon,creatComponent(),"first");//加入第一个页面
-		jTabbedpane.addTab(tabNames[i++], null, jpanelFirst, "first");
+		jTabbedpane.addTab(tabNames[i++], null, jpanelFirst, "爱屁屁");
 		jTabbedpane.setMnemonicAt(0, KeyEvent.VK_0);// 设置第一个位置的快捷键为0
 		// 第二个标签下的JPanel
 		JPanel monkeyPanel = new MonkeyPanel();
-		jTabbedpane.addTab(tabNames[i++], null, monkeyPanel, "second");
+		jTabbedpane.addTab(tabNames[i++], null, monkeyPanel, "|•ˇ₃ˇ•。)");
 
 		jTabbedpane.setMnemonicAt(1, KeyEvent.VK_1);// 设置快捷键为1
 		getContentPane().add(jTabbedpane);
