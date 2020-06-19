@@ -175,7 +175,6 @@ public class MainForm extends JFrame {
 		// jTabbedpane.addTab(tabNames[i++],icon,creatComponent(),"first");//加入第一个页面
 		jTabbedpane.addTab(tabNames[i++], null, jpanelFirst, "first");
 		jTabbedpane.setMnemonicAt(0, KeyEvent.VK_0);// 设置第一个位置的快捷键为0
-
 		// 第二个标签下的JPanel
 		JPanel monkeyPanel = new MonkeyPanel();
 		jTabbedpane.addTab(tabNames[i++], null, monkeyPanel, "second");
@@ -307,8 +306,7 @@ public class MainForm extends JFrame {
 		JPanel panel_setting = new JPanel();
 		panel_setting.setBounds(10, 91, 911, 90);
 		panel_setting.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		panel_setting.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null),
-				"\u8BBE\u7F6E\u533A", TitledBorder.LEFT, TitledBorder.TOP, null, null));
+		panel_setting.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "\u8BBE\u7F6E\u533A", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		jpanelFirst.add(panel_setting);
 
 		// 按钮组，让单选按钮只能选择一个
