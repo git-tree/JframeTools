@@ -56,6 +56,17 @@ import com.tinno.utils.DateUtil;
 import com.tinno.utils.FileUtil;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import javax.swing.JComboBox;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JList;
+import javax.swing.JSlider;
+import javax.swing.JTree;
+import javax.swing.JProgressBar;
+import javax.swing.JToolBar;
+import java.awt.Button;
 
 public class MainForm extends JFrame {
 	private JTextField txt_filepath;
@@ -97,10 +108,12 @@ public class MainForm extends JFrame {
 	private long onece_second = 5 * 1000;// 5s
 
 	private JTabbedPane jTabbedpane = new JTabbedPane();// 存放选项卡的组件
-	private String[] tabNames = { "应用相关", "小工具" };
+	private String[] tabNames = { "应用相关", "小工具","Monkey" };
 	private JCheckBox check_cold_install;
 	private JCheckBox check_open_after_install;
 	private final String ISTALL_PKG = "com.github.uiautomator";
+	private JMenuBar menuBar;
+	private JMenuItem menuItem;
 
 	/**
 	 * Launch the application.
@@ -158,7 +171,7 @@ public class MainForm extends JFrame {
 				}
 			}
 		});
-		setBounds(100, 100, 974, 575);
+		setBounds(100, 100, 974, 611);
 		getContentPane().setLayout(null);
 
 		/*
@@ -178,6 +191,9 @@ public class MainForm extends JFrame {
 		// 第二个标签下的JPanel
 		JPanel monkeyPanel = new MonkeyPanel();
 		jTabbedpane.addTab(tabNames[i++], null, monkeyPanel, "|•ˇ₃ˇ•。)");
+		//第三个面板，monkey测试
+		JPanel monkeytest=new MonkeyTestPanel();
+		jTabbedpane.addTab(tabNames[i++], null, monkeytest, "monkey测试");
 
 		jTabbedpane.setMnemonicAt(1, KeyEvent.VK_1);// 设置快捷键为1
 		getContentPane().add(jTabbedpane);
@@ -395,6 +411,15 @@ public class MainForm extends JFrame {
 		JButton btn_clear = new JButton("清空显示信息");
 		btn_clear.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		panel_btn.add(btn_clear);
+		
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		JMenu mnNewMenu = new JMenu("设置");
+		menuBar.add(mnNewMenu);
+		
+		menuItem = new JMenuItem("关于");
+		mnNewMenu.add(menuItem);
 		// 点击开始按钮事件
 		btn_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
