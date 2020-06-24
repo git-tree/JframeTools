@@ -67,6 +67,8 @@ import javax.swing.JTree;
 import javax.swing.JProgressBar;
 import javax.swing.JToolBar;
 import java.awt.Button;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MainForm extends JFrame {
 	private JTextField txt_filepath;
@@ -113,7 +115,8 @@ public class MainForm extends JFrame {
 	private JCheckBox check_open_after_install;
 	private final String ISTALL_PKG = "com.github.uiautomator";
 	private JMenuBar menuBar;
-	private JMenuItem menuItem;
+	private JMenuItem menu_about;
+	private JPanel panel;
 
 	/**
 	 * Launch the application.
@@ -156,7 +159,7 @@ public class MainForm extends JFrame {
 	 */
 	public MainForm() throws IOException {
 		setResizable(false);
-		setTitle("工具tools");
+		setTitle("工具tools_V2.0");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -171,7 +174,7 @@ public class MainForm extends JFrame {
 				}
 			}
 		});
-		setBounds(100, 100, 974, 611);
+		setBounds(100, 100, 974, 640);
 		getContentPane().setLayout(null);
 
 		/*
@@ -201,7 +204,7 @@ public class MainForm extends JFrame {
 		jpanelFirst.setLayout(null);
 
 		jsp = new JScrollPane();
-		jsp.setBounds(10, 191, 905, 259);
+		jsp.setBounds(10, 217, 905, 259);
 		jsp.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		// 把滚动条添加到容器里面
 		jpanelFirst.add(jsp);
@@ -412,14 +415,25 @@ public class MainForm extends JFrame {
 		btn_clear.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		panel_btn.add(btn_clear);
 		
+		panel = new JPanel();
+		jTabbedpane.addTab("Excel操作", null, panel, null);
+		
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
 		JMenu mnNewMenu = new JMenu("设置");
 		menuBar.add(mnNewMenu);
 		
-		menuItem = new JMenuItem("关于");
-		mnNewMenu.add(menuItem);
+		menu_about = new JMenuItem("关于");
+		menu_about.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				String message="天珑物联网,自动化测试\n"
+						+ "By_shusen(2020_05)";
+				JOptionPane.showMessageDialog(null, message);
+			}
+		});
+		mnNewMenu.add(menu_about);
 		// 点击开始按钮事件
 		btn_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
