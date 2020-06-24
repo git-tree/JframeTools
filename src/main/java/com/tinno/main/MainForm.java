@@ -110,13 +110,12 @@ public class MainForm extends JFrame {
 	private long onece_second = 5 * 1000;// 5s
 
 	private JTabbedPane jTabbedpane = new JTabbedPane();// 存放选项卡的组件
-	private String[] tabNames = { "应用相关", "小工具","Monkey" };
+	private String[] tabNames = { "应用相关", "小工具","Monkey","Excel" };
 	private JCheckBox check_cold_install;
 	private JCheckBox check_open_after_install;
 	private final String ISTALL_PKG = "com.github.uiautomator";
 	private JMenuBar menuBar;
 	private JMenuItem menu_about;
-	private JPanel panel;
 
 	/**
 	 * Launch the application.
@@ -197,7 +196,10 @@ public class MainForm extends JFrame {
 		//第三个面板，monkey测试
 		JPanel monkeytest=new MonkeyTestPanel();
 		jTabbedpane.addTab(tabNames[i++], null, monkeytest, "monkey测试");
-
+		//第四个ExcelPanel
+		JPanel excelPanel=new ExcelPanel();
+		jTabbedpane.addTab(tabNames[i++], null, excelPanel, "Excel操作~");
+		
 		jTabbedpane.setMnemonicAt(1, KeyEvent.VK_1);// 设置快捷键为1
 		getContentPane().add(jTabbedpane);
 		getContentPane().setLayout(new GridLayout(1, 1));
@@ -414,9 +416,6 @@ public class MainForm extends JFrame {
 		JButton btn_clear = new JButton("清空显示信息");
 		btn_clear.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		panel_btn.add(btn_clear);
-		
-		panel = new JPanel();
-		jTabbedpane.addTab("Excel操作", null, panel, null);
 		
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);

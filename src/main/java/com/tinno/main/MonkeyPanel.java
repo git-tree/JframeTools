@@ -439,7 +439,6 @@ public class MonkeyPanel extends JPanel {
 				OsInfo os=new OsInfo();
 				TextUtil.insertDocument("OS架构:【"+os.getArch()+"】\n"+
 						"OS的文件路径的分隔符:【"+os.getFileSeparator()+"】\n"+
-						"OS的文本文件换行符:"+os.getLineSeparator()+"\n"+
 						"OS的名称:【"+os.getName()+"】\n"+
 						"OS的搜索路径分隔符:【"+os.getPathSeparator()+"】\n"+
 						"OS的版本:【"+os.getVersion()+"】\n"
@@ -453,11 +452,7 @@ public class MonkeyPanel extends JPanel {
 		btn_getscreen_info.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		btn_getscreen_info.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				TextUtil.insertDocument("屏幕宽高:【"+ScreenUtil.getWidth()+"x"+ScreenUtil.getHeight()+"】", infocolor, txt_show, errorcolor);
-				
-				
-				
+				TextUtil.insertDocument("屏幕宽高:【"+ScreenUtil.getWidth()+"x"+ScreenUtil.getHeight()+"】", chocolate, txt_show, errorcolor);
 			}
 		});
 		btn_getscreen_info.setBounds(10, 39, 117, 23);
