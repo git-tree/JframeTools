@@ -195,6 +195,7 @@ public class MainForm extends JFrame {
 		jTabbedpane.addTab(tabNames[i++], null, monkeyPanel, "|•ˇ₃ˇ•。)");
 		//第三个面板，monkey测试
 		JPanel monkeytest=new MonkeyTestPanel();
+		monkeyPanel.setBounds(100, 100, 974, 640);
 		jTabbedpane.addTab(tabNames[i++], null, monkeytest, "monkey测试");
 		//第四个ExcelPanel
 		JPanel excelPanel=new ExcelPanel();
@@ -427,7 +428,7 @@ public class MainForm extends JFrame {
 		menu_about.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				String message="天珑物联网,自动化测试\n"
+				String message="天珑物联网_自动化测试\n"
 						+ "By_shusen(2020_05)";
 				JOptionPane.showMessageDialog(null, message);
 			}

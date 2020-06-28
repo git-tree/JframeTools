@@ -344,7 +344,7 @@ public class MonkeyPanel extends JPanel {
 		jsp.setViewportView(txt_show);
 		
 		JPanel panel_2 = new JPanel();
-		panel_2.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "\u7CFB\u7EDF", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel_2.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "PC", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panel_2.setBounds(34, 255, 846, 92);
 		add(panel_2);
 		panel_2.setLayout(null);

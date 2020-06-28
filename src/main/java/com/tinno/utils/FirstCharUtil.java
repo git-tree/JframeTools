@@ -98,7 +98,7 @@ public class FirstCharUtil {
 	}
 
 	public static void main(String[] args) {
-		String first = FirstCharUtil.first("崔");
+		String first = FirstCharUtil.first("崔术森");
 		System.out.println(first);
 	}
 }
