@@ -52,7 +52,28 @@ public class CmdUtil {
 		}
 		return result;
 	}
-
+	//打印cmd执行的log
+	public static String excuteCMDCommand_str(String cmdCommand,boolean isprintLog) {
+		StringBuilder stringBuilder = new StringBuilder();
+		Process process = null;
+		String result = "";
+		try {
+			process = Runtime.getRuntime().exec("cmd.exe /c " + cmdCommand);
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "GBK"));
+			String line = null;
+			while ((line = bufferedReader.readLine()) != null) {
+				stringBuilder.append(line + "\n");
+				if(isprintLog){
+					System.out.println(line);
+				}
+			}
+			result = stringBuilder.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
+		}
+		return result;
+	}
 	public static boolean check_isappInstalled(String pkg) {
 		String result = excuteCMDCommand_str("adb shell pm list packages").replace("package:", "");
 		// System.out.println(result);

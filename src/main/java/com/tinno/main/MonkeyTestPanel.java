@@ -19,6 +19,7 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.security.auth.callback.ChoiceCallback;
 import javax.swing.AbstractListModel;
 import javax.swing.ButtonGroup;
@@ -43,7 +44,10 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 
 import com.tinno.enums.PackageTypeEnum;
+import com.tinno.pojo.MonkeyString;
 import com.tinno.utils.CmdUtil;
+import com.tinno.utils.TextUtil;
+
 import javax.swing.JTextField;
 
 public class MonkeyTestPanel extends JPanel {
@@ -63,6 +67,28 @@ public class MonkeyTestPanel extends JPanel {
 	private JTextField txt_main_nav;
 	private JTextField txt_app_switch;
 	private JTextField txt_other;
+	private List<String> pkg;
+	private String level;
+	private long testcount;
+	private long event_space;
+	private long seed;
+	private String crash_goon="";
+	private String  anr_goon="";
+	private String security_goon="";
+	private String exception_stay="";
+	private String lising_code="";
+	private String generate_report="";
+	private long touchPersent;
+	private long motionPersent;
+	private long trackballPersent;
+	private long navPersent;
+	private long turnonPersent;
+	private long mainnavPersent;
+	private long systemkeyPersent;
+	private long appswitchPersent;
+	private long keyboardPersent;
+	private long otherPersent;
+	private MonkeyString monkey;
 	/**
 	 * Create the panel.
 	 */
@@ -163,7 +189,7 @@ public class MonkeyTestPanel extends JPanel {
 		btn_refresh_pkg.setBounds(171, 15, 69, 23);
 		panel_pkg.add(btn_refresh_pkg);
 		
-		JButton btn_choice_pkg = new JButton("选择");
+		JButton btn_choice_pkg = new JButton("选中");
 		btn_choice_pkg.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		btn_choice_pkg.setBounds(250, 15, 79, 23);
 		panel_pkg.add(btn_choice_pkg);
@@ -203,21 +229,21 @@ public class MonkeyTestPanel extends JPanel {
 		panel_base_setting.add(lblNewLabel);
 		lblNewLabel.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		
-		JComboBox combox_level = new JComboBox();
+		final JComboBox combox_level = new JComboBox();
 		combox_level.setBounds(105, 16, 56, 21);
 		panel_base_setting.add(combox_level);
 		combox_level.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		combox_level.setModel(new DefaultComboBoxModel(new String[] {"低", "中", "高"}));
 		combox_level.setSelectedIndex(1);
 		
-		JLabel lblNewLabel_1 = new JLabel("测试次数:");
-		lblNewLabel_1.setBounds(176, 22, 54, 15);
+		JLabel lblNewLabel_1 = new JLabel("测试小时:");
+		lblNewLabel_1.setBounds(23, 53, 54, 15);
 		panel_base_setting.add(lblNewLabel_1);
 		lblNewLabel_1.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		
 		txt_testcount = new JTextField();
-		txt_testcount.setText("100000");
-		txt_testcount.setBounds(245, 16, 75, 21);
+		txt_testcount.setText("8");
+		txt_testcount.setBounds(92, 47, 75, 21);
 		panel_base_setting.add(txt_testcount);
 		txt_testcount.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		txt_testcount.addKeyListener(new KeyAdapter() {
@@ -232,7 +258,7 @@ public class MonkeyTestPanel extends JPanel {
 		
 		JLabel lblNewLabel_2 = new JLabel("事件间隔(ms):");
 		lblNewLabel_2.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		lblNewLabel_2.setBounds(13, 53, 88, 15);
+		lblNewLabel_2.setBounds(171, 19, 88, 15);
 		panel_base_setting.add(lblNewLabel_2);
 		
 		txt_throttle = new JTextField();
@@ -247,7 +273,7 @@ public class MonkeyTestPanel extends JPanel {
 		txt_throttle.setText("200");
 		txt_throttle.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		txt_throttle.setColumns(10);
-		txt_throttle.setBounds(105, 47, 64, 21);
+		txt_throttle.setBounds(245, 16, 64, 21);
 		panel_base_setting.add(txt_throttle);
 		
 		JLabel lblNewLabel_3 = new JLabel("种子值:");
@@ -270,36 +296,35 @@ public class MonkeyTestPanel extends JPanel {
 		txt_seed.setBounds(245, 47, 64, 21);
 		panel_base_setting.add(txt_seed);
 		
-		JCheckBox check_ignore_crashes = new JCheckBox("出现crash继续");
+		final JCheckBox check_ignore_crashes = new JCheckBox("出现crash继续");
+		check_ignore_crashes.setSelected(true);
 		check_ignore_crashes.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		check_ignore_crashes.setBounds(15, 76, 121, 23);
+		check_ignore_crashes.setBounds(13, 76, 121, 23);
 		panel_base_setting.add(check_ignore_crashes);
 		
-		JCheckBox check_ignore_anr = new JCheckBox("出现anr继续");
+		final JCheckBox check_ignore_anr = new JCheckBox("出现anr继续");
+		check_ignore_anr.setSelected(true);
 		check_ignore_anr.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		check_ignore_anr.setBounds(176, 74, 103, 23);
 		
 		
 		panel_base_setting.add(check_ignore_anr);
 		
-		JCheckBox check_ignore_security = new JCheckBox("出现许可异常继续");
-		check_ignore_security.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		check_ignore_security.setBounds(15, 101, 146, 23);
-		panel_base_setting.add(check_ignore_security);
-		
-		JCheckBox check_stay_exception = new JCheckBox("出现异常停留在异常状态");
+		final JCheckBox check_stay_exception = new JCheckBox("出现异常停留在异常状态");
 		check_stay_exception.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		check_stay_exception.setBounds(176, 101, 157, 23);
+		check_stay_exception.setBounds(176, 99, 157, 23);
 		panel_base_setting.add(check_stay_exception);
 		
-		JCheckBox check_monitor_native_crashes = new JCheckBox("监视崩溃代码");
+		final JCheckBox check_monitor_native_crashes = new JCheckBox("监视崩溃代码");
+		check_monitor_native_crashes.setSelected(true);
 		check_monitor_native_crashes.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		check_monitor_native_crashes.setBounds(15, 125, 121, 23);
+		check_monitor_native_crashes.setBounds(13, 101, 121, 23);
 		panel_base_setting.add(check_monitor_native_crashes);
 		
-		JCheckBox check_creat_report = new JCheckBox("生成report");
+		final JCheckBox check_creat_report = new JCheckBox("生成report");
+		check_creat_report.setSelected(true);
 		check_creat_report.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		check_creat_report.setBounds(176, 125, 121, 23);
+		check_creat_report.setBounds(13, 126, 121, 23);
 		panel_base_setting.add(check_creat_report);
 		
 		JPanel panel_event = new JPanel();
@@ -507,6 +532,172 @@ public class MonkeyTestPanel extends JPanel {
 		txt_other.setColumns(10);
 		txt_other.setBounds(160, 189, 33, 21);
 		panel_event.add(txt_other);
+		
+		JButton btnNewButton = new JButton("开始");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//获取选中包名
+				pkg=list.getSelectedValuesList();
+				if(pkg.size()==0){
+					showdialog("请选择测试包名");
+					return;
+				}
+				for (int i = 0; i < pkg.size(); i++) {
+					if(pkg.get(i).toString().equals("com.mediatek.mtklogger")){
+						pkg.remove(i);
+					}
+				}
+				System.out.println(pkg.toString());
+				//获取日志等级
+				level=combox_level.getSelectedItem().toString();
+				if(level.equals("低")){
+					level=" -v ";
+				}else if(level.equals("中")){
+					level=" -v -v ";
+				}else{
+					level=" -v -v -v ";
+				}
+				//获取事件间隔
+				event_space=Integer.parseInt(txt_throttle.getText());
+				//获取次数
+				if("".equals(txt_testcount.getText())){
+					JOptionPane.showMessageDialog(null, "请输入次数");
+					return;
+				}
+				if(event_space<200||event_space>500){
+					showdialog("事件间隔请输入200-500之间的数字");
+					return;
+				}
+				testcount=Integer.parseInt(txt_testcount.getText())*60*60*1000/event_space;
+				//获取seed
+				seed=Integer.parseInt(txt_seed.getText());
+				//获取是否crash继续
+				if(check_ignore_crashes.isSelected()){
+					crash_goon="--ignore-crashes";
+				}
+				//获取是否anr继续
+				if(check_ignore_anr.isSelected()){
+					anr_goon="--ignore-timeouts";
+				}
+				//获取异常停留界面
+				if(check_stay_exception.isSelected()){
+					exception_stay="--kill-process-after-error";
+				}
+				//获取监视代码
+				if(check_monitor_native_crashes.isSelected()){
+					lising_code="--monitor-native-crashes";
+				}
+				//获取report
+				if(check_creat_report.isSelected()){
+					generate_report="--hprof";
+				}
+				//获取触摸
+				if(!"".equals(txt_touch.getText())){
+					touchPersent=Integer.parseInt(txt_touch.getText());
+				}
+				//获取滑屏
+				if(!"".equals(txt_slip_screen.getText())){
+					motionPersent=Integer.parseInt(txt_slip_screen.getText());
+				}
+				//获取轨迹球事件
+				if(!"".equals(txt_ball.getText())){
+					trackballPersent=Integer.parseInt(txt_ball.getText());
+				}
+				//获取导航
+				if(!"".equals(txt_nav.getText())){
+					navPersent=Integer.parseInt(txt_nav.getText());
+				}
+				//获取旋转
+				if(!"".equals(txt_round.getText())){
+					turnonPersent=Integer.parseInt(txt_round.getText());
+				}
+				//获取主导航
+				if(!"".equals(txt_main_nav.getText())){
+					mainnavPersent=Integer.parseInt(txt_main_nav.getText());
+				}
+				//获取系统按键
+				if(!"".equals(txt_sys_key.getText())){
+					systemkeyPersent=Integer.parseInt(txt_sys_key.getText());
+				}
+				//获取app切换
+				if(!"".equals(txt_app_switch.getText())){
+					appswitchPersent=Integer.parseInt(txt_app_switch.getText());
+				}
+				//获取键盘翻转
+				if(!"".equals(txt_keyborad_round.getText())){
+					keyboardPersent=Integer.parseInt(txt_keyborad_round.getText());
+				}
+				//获取其他
+				if(!"".equals(txt_other.getText())){
+					otherPersent=Integer.parseInt(txt_other.getText());
+				}
+				
+				monkey=new MonkeyString(pkg, level, testcount, event_space, seed, crash_goon, anr_goon, exception_stay, lising_code, generate_report, touchPersent, motionPersent, trackballPersent, navPersent, turnonPersent, mainnavPersent, systemkeyPersent, appswitchPersent, keyboardPersent, otherPersent);
+				monkey.setPkg(pkg);
+				System.out.println("monkey的实体参数为："+monkey.toString());
+				//生成monkey命令
+				final StringBuilder sb =new StringBuilder();
+				sb.append("adb shell monkey ");
+				//加上包名
+				for(int i =0;i<monkey.getPkg().size();i++){
+					sb.append("-p "+pkg.get(i).toString()+" ");
+				}
+				//加上配置
+				//seed
+				sb.append("-s "+monkey.getSeed()+" ");
+				//事件间隔
+				sb.append("--throttle "+monkey.getEvent_space()+" ");
+				//crash
+				sb.append(monkey.getCrash_goon()+" ");
+				//anr
+				sb.append(monkey.getAnr_goon()+" ");
+				//许可
+//				sb.append(monkey.getSecurity_goon()+" ");
+				//异常停留
+				sb.append(monkey.getException_stay()+" ");
+				//监视代码
+				sb.append(monkey.getLising_code()+" ");
+				//report
+				sb.append(monkey.getGenerate_report()+" ");
+				//事件比例
+				//触摸
+				sb.append("--pct-touch "+monkey.getTouchPersent()+" ");
+				//滑屏
+				sb.append("--pct-motion "+monkey.getMotionPersent()+" ");
+				//轨迹球
+				sb.append("--pct-trackball "+monkey.getTrackballPersent()+" ");
+				//导航
+				sb.append("--pct-nav "+monkey.getNavPersent()+" ");
+				//旋转
+				sb.append("--pct-rotation "+monkey.getTurnonPersent()+" ");
+				//主导航
+				sb.append("--pct-majornav "+monkey.getMainnavPersent()+" ");
+				//系统按键
+				sb.append("--pct-syskeys "+monkey.getSystemkeyPersent()+" ");
+				//app切换
+				sb.append("--pct-appswitch "+monkey.getAppswitchPersent()+" ");
+				//键盘翻转
+				sb.append("--pct-flip "+monkey.getKeyboardPersent()+" ");
+				//其他
+				sb.append("--pct-anyevent "+monkey.getOtherPersent()+" ");
+				//日志
+				sb.append(monkey.getLevel());
+				//次数
+				sb.append(testcount);
+				System.out.println("monkey命令为:"+sb);
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						TextUtil.insertDocument("monkey命令为:"+sb, ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+						CmdUtil.excuteCMDCommand_str(sb.toString(),false);
+					}
+				}).start();
+				
+			}
+		});
+		btnNewButton.setBounds(64, 294, 93, 23);
+		add(btnNewButton);
 		//全选按钮点击事件
 		checkbox_all.addMouseListener(new MouseAdapter() {
 			@Override
@@ -524,7 +715,9 @@ public class MonkeyTestPanel extends JPanel {
 			}
 		});
 	}
-
+private void showdialog(String str){
+	JOptionPane.showMessageDialog(null, str);
+}
 //复选框
 public class MyJcheckBox extends JCheckBox implements ListCellRenderer {
 	
