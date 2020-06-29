@@ -1,59 +1,52 @@
 package com.tinno.main;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
-
-import com.tinno.enums.ColorEnum;
-
-import javax.swing.JLabel;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import javax.swing.JButton;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.List;
-import java.awt.event.ActionEvent;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.security.auth.callback.ChoiceCallback;
-import javax.swing.AbstractListModel;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.ListSelectionModel;
-import javax.swing.JCheckBox;
-import javax.swing.JProgressBar;
-import javax.swing.UIManager;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.JTextPane;
-import javax.swing.SwingConstants;
-import javax.swing.JComboBox;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.ListCellRenderer;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.text.DefaultCaret;
 
+import com.tinno.enums.ColorEnum;
 import com.tinno.enums.PackageTypeEnum;
 import com.tinno.pojo.MonkeyString;
 import com.tinno.utils.CmdUtil;
 import com.tinno.utils.TextUtil;
 
-import javax.swing.JTextField;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.file.FileReader;
 
 public class MonkeyTestPanel extends JPanel {
 	private String cmdcommand="adb shell pm list packages ";
 	private String [] cmd_reslut;
 	private DefaultListModel model=new DefaultListModel<>();
+	private  JTextPane txt_show ;
 	private JTextField txt_testcount;
 	private JTextField txt_throttle;
 	private JTextField txt_seed;
@@ -67,6 +60,7 @@ public class MonkeyTestPanel extends JPanel {
 	private JTextField txt_main_nav;
 	private JTextField txt_app_switch;
 	private JTextField txt_other;
+	private List<String> black_pkg=new ArrayList<>();
 	private List<String> pkg;
 	private String level;
 	private long testcount;
@@ -89,6 +83,10 @@ public class MonkeyTestPanel extends JPanel {
 	private long keyboardPersent;
 	private long otherPersent;
 	private MonkeyString monkey;
+	private JTextField txt_black_pkg;
+	private String choicepath;
+	private String choice_logpath;
+	private String logfilename="monkeyLog.txt";
 	/**
 	 * Create the panel.
 	 */
@@ -98,13 +96,13 @@ public class MonkeyTestPanel extends JPanel {
 		
 		JPanel panel_pkg = new JPanel();
 		panel_pkg.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "\u9009\u62E9\u8981\u6D4B\u8BD5\u7684\u5305", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_pkg.setBounds(10, 10, 339, 245);
+		panel_pkg.setBounds(10, 10, 339, 276);
 		add(panel_pkg);
 		panel_pkg.setLayout(null);
 		
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(10, 48, 319, 187);
+		scrollPane_1.setBounds(10, 79, 319, 187);
 		panel_pkg.add(scrollPane_1);
 		
 		final JCheckBox checkbox_all = new JCheckBox("全选/取消");
@@ -135,10 +133,10 @@ public class MonkeyTestPanel extends JPanel {
 		final JComboBox combox_select_pkg = new JComboBox();
 		combox_select_pkg.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		combox_select_pkg.setModel(new DefaultComboBoxModel(PackageTypeEnum.values()));
-		combox_select_pkg.setBounds(10, 17, 151, 21);
+		combox_select_pkg.setBounds(10, 17, 113, 21);
 		panel_pkg.add(combox_select_pkg);
 		
-		JButton btn_refresh_pkg = new JButton("查看包");
+		JButton btn_refresh_pkg = new JButton("查看");
 		btn_refresh_pkg.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		btn_refresh_pkg.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -186,13 +184,91 @@ public class MonkeyTestPanel extends JPanel {
 				}
 			}
 		});
-		btn_refresh_pkg.setBounds(171, 15, 69, 23);
+		btn_refresh_pkg.setBounds(133, 16, 69, 23);
 		panel_pkg.add(btn_refresh_pkg);
 		
-		JButton btn_choice_pkg = new JButton("选中");
-		btn_choice_pkg.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		btn_choice_pkg.setBounds(250, 15, 79, 23);
-		panel_pkg.add(btn_choice_pkg);
+		JButton btn_import_black_pkg = new JButton("导入黑名单");
+		btn_import_black_pkg.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("选择黑名单");
+				fileChooser.setApproveButtonText("确定");
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				int result = fileChooser.showOpenDialog(getParent());
+				if (JFileChooser.APPROVE_OPTION == result) {
+					choicepath=fileChooser.getSelectedFile().getPath().trim();
+					if(!choicepath.endsWith(".txt")){
+						TextUtil.insertDocument("请选择txt格式文档", ColorEnum.INFOCOLOR.getColor(),txt_show ,ColorEnum.ERRORCOLOR.getColor());
+						showdialog("请选择txt格式文档");
+						choicepath="";
+						return;
+					}
+					FileReader fileReader = new FileReader(FileUtil.file(choicepath),"UTF-8");
+					for (int i = 0; i < fileReader.readLines().size(); i++) {
+						if(!black_pkg.contains(fileReader.readLines().get(i).toString())){
+							black_pkg.add(fileReader.readLines().get(i).toString());
+						}
+					}
+					TextUtil.insertDocument("当前黑名单为:", ColorEnum.INFOCOLOR.getColor(),txt_show ,ColorEnum.ERRORCOLOR.getColor());
+					for (int i = 0; i < black_pkg.size(); i++) {
+						TextUtil.insertDocument(black_pkg.get(i), ColorEnum.CHOCPLATECOLOR.getColor(),txt_show ,ColorEnum.ERRORCOLOR.getColor());
+					}
+					showdialog("添加成功!");
+				}
+			}
+		});
+		btn_import_black_pkg.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_import_black_pkg.setBounds(228, 16, 101, 23);
+		panel_pkg.add(btn_import_black_pkg);
+		
+		txt_black_pkg = new JTextField();
+		txt_black_pkg.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		txt_black_pkg.setColumns(10);
+		txt_black_pkg.setBounds(10, 48, 101, 21);
+		panel_pkg.add(txt_black_pkg);
+		
+		JButton btn_add_blackPkg = new JButton("添加黑名单");
+		btn_add_blackPkg.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(black_pkg==null){
+					black_pkg=new ArrayList<>();
+				}
+				if("".equals(txt_black_pkg.getText().toString().trim())){
+					showdialog("请输入要添加的包名");
+					return;
+				}
+				if(black_pkg.contains(txt_black_pkg.getText().toString().trim())){
+					showdialog("已存在此黑名单,请勿重复添加!");
+					return;
+				}
+				black_pkg.add(txt_black_pkg.getText().toString().trim());
+				showdialog("添加成功");
+				TextUtil.insertDocument("当前黑名单为:", ColorEnum.INFOCOLOR.getColor(),txt_show ,ColorEnum.ERRORCOLOR.getColor());
+				for (int i = 0; i < black_pkg.size(); i++) {
+					TextUtil.insertDocument(black_pkg.get(i), ColorEnum.CHOCPLATECOLOR.getColor(),txt_show ,ColorEnum.ERRORCOLOR.getColor());
+				}
+			}
+		});
+		btn_add_blackPkg.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_add_blackPkg.setBounds(117, 47, 101, 23);
+		panel_pkg.add(btn_add_blackPkg);
+		
+		JButton btn_add_blackPkg_1 = new JButton("清空黑名单");
+		btn_add_blackPkg_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(black_pkg==null ||black_pkg.size()==0){
+					showdialog("没有黑名单了。");
+					return;
+				}else{
+					black_pkg.clear();
+					showdialog("清空完成");
+					TextUtil.insertDocument("当前黑名单为空", ColorEnum.SUCCESSCOLOR.getColor(),txt_show ,ColorEnum.ERRORCOLOR.getColor());
+				}
+			}
+		});
+		btn_add_blackPkg_1.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_add_blackPkg_1.setBounds(228, 46, 101, 23);
+		panel_pkg.add(btn_add_blackPkg_1);
 		
 		JPanel panel_log = new JPanel();
 		panel_log.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "log", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
@@ -204,8 +280,11 @@ public class MonkeyTestPanel extends JPanel {
 		scrollPane.setBounds(10, 40, 890, 107);
 		panel_log.add(scrollPane);
 		
-		final JTextPane txt_show = new JTextPane();
+		txt_show= new JTextPane();
 		txt_show.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		// 让滚动条始终在下(显示最新信息)
+		DefaultCaret caret = (DefaultCaret) txt_show.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		scrollPane.setViewportView(txt_show);
 		
 		JButton btn_clear_log = new JButton("清空");
@@ -220,7 +299,7 @@ public class MonkeyTestPanel extends JPanel {
 		
 		JPanel panel_base_setting = new JPanel();
 		panel_base_setting.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "\u53C2\u6570\u914D\u7F6E", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_base_setting.setBounds(356, 10, 339, 245);
+		panel_base_setting.setBounds(356, 10, 339, 276);
 		add(panel_base_setting);
 		panel_base_setting.setLayout(null);
 		
@@ -327,9 +406,28 @@ public class MonkeyTestPanel extends JPanel {
 		check_creat_report.setBounds(13, 126, 121, 23);
 		panel_base_setting.add(check_creat_report);
 		
+		JButton btn_choice_log_path = new JButton("选择日志保存路径");
+		btn_choice_log_path.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("选择文件夹");
+				fileChooser.setApproveButtonText("确定");
+				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int result = fileChooser.showOpenDialog(getParent());
+				if (JFileChooser.APPROVE_OPTION == result) {
+					choice_logpath=fileChooser.getSelectedFile().getPath().trim();
+					System.out.println(choice_logpath);
+					TextUtil.insertDocument("选择的路径为:"+choice_logpath, ColorEnum.INFOCOLOR.getColor(),txt_show ,ColorEnum.ERRORCOLOR.getColor());
+				}
+			}
+		});
+		btn_choice_log_path.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_choice_log_path.setBounds(178, 128, 131, 23);
+		panel_base_setting.add(btn_choice_log_path);
+		
 		JPanel panel_event = new JPanel();
 		panel_event.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "\u4E8B\u4EF6\u6BD4\u4F8B(%)", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_event.setBounds(705, 21, 215, 234);
+		panel_event.setBounds(705, 21, 215, 265);
 		add(panel_event);
 		panel_event.setLayout(null);
 		
@@ -534,6 +632,7 @@ public class MonkeyTestPanel extends JPanel {
 		panel_event.add(txt_other);
 		
 		JButton btnNewButton = new JButton("开始");
+		btnNewButton.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//获取选中包名
@@ -542,12 +641,28 @@ public class MonkeyTestPanel extends JPanel {
 					showdialog("请选择测试包名");
 					return;
 				}
+				if(choice_logpath==null||"".equals(choice_logpath)){
+					showdialog("请选log存放路径");
+					return;
+				}
+				//log txt 文件
+				File logfile=FileUtil.file(choice_logpath+logfilename);
+				if(logfile.exists()){
+					logfile.delete();
+				}
+				//去除logging
 				for (int i = 0; i < pkg.size(); i++) {
 					if(pkg.get(i).toString().equals("com.mediatek.mtklogger")){
 						pkg.remove(i);
 					}
 				}
-				System.out.println(pkg.toString());
+				//去除黑名单的包名
+				HashSet hs1 = new HashSet(pkg);
+		        HashSet hs2 = new HashSet(black_pkg);
+		        hs1.removeAll(hs2);
+		        List<String> listC = new ArrayList<String>();
+		        listC.addAll(hs1);
+		        pkg=listC;
 				//获取日志等级
 				level=combox_level.getSelectedItem().toString();
 				if(level.equals("低")){
@@ -684,20 +799,83 @@ public class MonkeyTestPanel extends JPanel {
 				sb.append(monkey.getLevel());
 				//次数
 				sb.append(testcount);
-				System.out.println("monkey命令为:"+sb);
+				sb.append(">"+choice_logpath+logfilename);
+				System.out.println(sb.toString());
+				TextUtil.insertDocument("正在启动monkey...", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						TextUtil.insertDocument("monkey命令为:"+sb, ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 						CmdUtil.excuteCMDCommand_str(sb.toString(),false);
+					}
+				}).start();
+				
+				new Thread(new  Runnable() {
+					public void run() {
+						try {
+							System.out.println("sleep开始");
+							Thread.sleep(5000);
+							System.out.println("sleepend");
+							String result=CmdUtil.excuteCMDCommand_str("adb shell ps -A|findstr monkey");
+							if(!"".equals(result)){
+								TextUtil.insertDocument("启动monkey成功!", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								TextUtil.insertDocument("测试时间"+txt_testcount.getText()+"小时...", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								Thread.sleep(800);
+								TextUtil.insertDocument("日志等级"+combox_level.getSelectedItem().toString()+"...", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								Thread.sleep(800);
+								TextUtil.insertDocument("测试应用", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								for (int i = 0; i < pkg.size(); i++) {
+									TextUtil.insertDocument(pkg.get(i).toString(), ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+									Thread.sleep(100);
+								}
+								Thread.sleep(800);
+								TextUtil.insertDocument("黑名单应用", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								for (int j = 0; j < black_pkg.size(); j++) {
+									TextUtil.insertDocument(black_pkg.get(j).toString(), ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+									Thread.sleep(100);
+								}
+								return;
+							}else{
+								TextUtil.insertDocument("启动monkey失败，可能选择的包不支持!", ColorEnum.ERRORCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								return;
+							}
+						} catch (InterruptedException e) {
+							return;
+						}
 					}
 				}).start();
 				
 			}
 		});
-		btnNewButton.setBounds(64, 294, 93, 23);
+		btnNewButton.setBounds(20, 296, 93, 23);
 		add(btnNewButton);
+		
+		JButton btnNewButton_1 = new JButton("停止");
+		btnNewButton_1.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						String res=CmdUtil.excuteCMDCommand_str("adb shell ps -A|findstr monkey");
+						String [] resarr=res.split("\n");
+						TextUtil.insertDocument("正在停止..", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+						for (int i = 0; i < resarr.length; i++) {
+							System.out.println(resarr[i]+i);
+							for(int j=0;j<resarr[i].split(" ").length;j++){
+								CmdUtil.excuteCMDCommand_str("adb shell kill -9 "+resarr[i].split(" ")[j]);
+							}
+						}
+						TextUtil.insertDocument("停止成功！", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+					}
+					
+				}).start();
+			}
+		});
+		btnNewButton_1.setBounds(123, 296, 93, 23);
+		add(btnNewButton_1);
 		//全选按钮点击事件
 		checkbox_all.addMouseListener(new MouseAdapter() {
 			@Override
