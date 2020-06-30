@@ -664,7 +664,7 @@ public class MonkeyTestPanel extends JPanel {
 			}
 		});
 		btn_reset_normal_persent.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		btn_reset_normal_persent.setBounds(49, 232, 125, 23);
+		btn_reset_normal_persent.setBounds(49, 243, 125, 23);
 		panel_event.add(btn_reset_normal_persent);
 		
 		JButton btn_startmonkey = new JButton("在线monkey测试");
