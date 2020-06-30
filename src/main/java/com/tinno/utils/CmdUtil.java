@@ -220,7 +220,6 @@ public class CmdUtil {
 	public static void main(String[] args) throws IOException {
 		// com.github.uiautomator
 		// System.out.println(check_isappInstalled("com.qiyi.video"));
-		System.out.println(excuteCMDCommand_str("adb shell "));
 	}
 	/**
 	 * 判断是否为亮屏
