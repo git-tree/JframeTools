@@ -110,7 +110,7 @@ public class MainForm extends JFrame {
 	private long onece_second = 5 * 1000;// 5s
 
 	private JTabbedPane jTabbedpane = new JTabbedPane();// 存放选项卡的组件
-	private String[] tabNames = { "应用相关", "小工具","Monkey","Excel" };
+	private String[] tabNames = { "应用相关", "小工具","Monkey","Excel","cmd集合" };
 	private JCheckBox check_cold_install;
 	private JCheckBox check_open_after_install;
 	private final String ISTALL_PKG = "com.github.uiautomator";
@@ -201,6 +201,9 @@ public class MainForm extends JFrame {
 		//第四个ExcelPanel
 		JPanel excelPanel=new ExcelPanel();
 		jTabbedpane.addTab(tabNames[i++], null, excelPanel, "Excel操作~");
+		//第五个cmdPanel
+		JPanel cmdPanel=new CmdPanel();
+		jTabbedpane.addTab(tabNames[i++], null, cmdPanel, "cmd相关操作~");
 		
 		jTabbedpane.setMnemonicAt(1, KeyEvent.VK_1);// 设置快捷键为1
 		getContentPane().add(jTabbedpane);

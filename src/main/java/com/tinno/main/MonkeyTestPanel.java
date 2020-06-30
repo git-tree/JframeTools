@@ -43,6 +43,9 @@ import com.tinno.utils.TextUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
+import cn.hutool.core.io.file.FileWriter;
+
+import javax.swing.SwingConstants;
 
 public class MonkeyTestPanel extends JPanel {
 	private String cmdcommand="adb shell pm list packages ";
@@ -90,6 +93,8 @@ public class MonkeyTestPanel extends JPanel {
 	private String choice_logpath;
 	private String logfilename="";
 	private final String date_formate_role="yyyyMMddHHmmss";
+	private String off_log_name;
+	private JCheckBox check_ignore_anr;
 	/**
 	 * Create the panel.
 	 */
@@ -316,7 +321,7 @@ public class MonkeyTestPanel extends JPanel {
 		panel_base_setting.add(combox_level);
 		combox_level.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		combox_level.setModel(new DefaultComboBoxModel(new String[] {"低", "中", "高"}));
-		combox_level.setSelectedIndex(1);
+		combox_level.setSelectedIndex(2);
 		
 		JLabel lblNewLabel_1 = new JLabel("测试小时:");
 		lblNewLabel_1.setBounds(23, 53, 54, 15);
@@ -384,7 +389,7 @@ public class MonkeyTestPanel extends JPanel {
 		check_ignore_crashes.setBounds(13, 76, 121, 23);
 		panel_base_setting.add(check_ignore_crashes);
 		
-		final JCheckBox check_ignore_anr = new JCheckBox("出现anr继续");
+		check_ignore_anr = new JCheckBox("出现anr继续");
 		check_ignore_anr.setSelected(true);
 		check_ignore_anr.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		check_ignore_anr.setBounds(176, 74, 103, 23);
@@ -392,7 +397,7 @@ public class MonkeyTestPanel extends JPanel {
 		
 		panel_base_setting.add(check_ignore_anr);
 		
-		final JCheckBox check_stay_exception = new JCheckBox("出现异常停留在异常状态");
+		final JCheckBox check_stay_exception = new JCheckBox("出现异常直接停留");
 		check_stay_exception.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		check_stay_exception.setBounds(176, 99, 157, 23);
 		panel_base_setting.add(check_stay_exception);
@@ -409,24 +414,23 @@ public class MonkeyTestPanel extends JPanel {
 		check_creat_report.setBounds(13, 126, 121, 23);
 		panel_base_setting.add(check_creat_report);
 		
-		JButton btn_choice_log_path = new JButton("选择日志保存路径");
-		btn_choice_log_path.addActionListener(new ActionListener() {
+		JButton btn_reset_normal_config = new JButton("恢复默认配置");
+		btn_reset_normal_config.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setDialogTitle("选择文件夹");
-				fileChooser.setApproveButtonText("确定");
-				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int result = fileChooser.showOpenDialog(getParent());
-				if (JFileChooser.APPROVE_OPTION == result) {
-					choice_logpath=fileChooser.getSelectedFile().getPath().trim();
-					System.out.println(choice_logpath);
-					TextUtil.insertDocument("选择的路径为:"+choice_logpath, ColorEnum.INFOCOLOR.getColor(),txt_show ,ColorEnum.ERRORCOLOR.getColor());
-				}
+				combox_level.setSelectedIndex(2);
+				txt_throttle.setText("200");
+				txt_testcount.setText("8");
+				txt_seed.setText("200");
+				check_ignore_crashes.setSelected(true);
+				check_ignore_anr.setSelected(true);
+				check_monitor_native_crashes.setSelected(true);
+				check_stay_exception.setSelected(false);
+				check_creat_report.setSelected(true);
 			}
 		});
-		btn_choice_log_path.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		btn_choice_log_path.setBounds(178, 128, 131, 23);
-		panel_base_setting.add(btn_choice_log_path);
+		btn_reset_normal_config.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_reset_normal_config.setBounds(105, 243, 125, 23);
+		panel_base_setting.add(btn_reset_normal_config);
 		
 		JPanel panel_event = new JPanel();
 		panel_event.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "\u4E8B\u4EF6\u6BD4\u4F8B(%)", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
@@ -634,7 +638,36 @@ public class MonkeyTestPanel extends JPanel {
 		txt_other.setBounds(160, 189, 33, 21);
 		panel_event.add(txt_other);
 		
-		JButton btn_startmonkey = new JButton("开始monkey测试");
+		JButton btn_reset_normal_persent = new JButton("恢复默认比例");
+		btn_reset_normal_persent.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//设置触摸
+					txt_touch.setText("15");
+				//设置滑屏
+					txt_slip_screen.setText("10");
+				//设置轨迹球事件
+					txt_ball.setText("2");
+				//设置导航
+					txt_nav.setText("25");
+				//设置旋转
+					txt_round.setText("5");
+				//设置主导航
+					txt_main_nav.setText("15");
+				//设置系统按键
+					txt_sys_key.setText("2");
+				//设置app切换
+					txt_app_switch.setText("5");
+				//设置键盘翻转
+					txt_keyborad_round.setText("1");
+				//设置其他
+					txt_other.setText("15");
+			}
+		});
+		btn_reset_normal_persent.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_reset_normal_persent.setBounds(49, 232, 125, 23);
+		panel_event.add(btn_reset_normal_persent);
+		
+		JButton btn_startmonkey = new JButton("在线monkey测试");
 		btn_startmonkey.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		btn_startmonkey.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -858,7 +891,7 @@ public class MonkeyTestPanel extends JPanel {
 				
 			}
 		});
-		btn_startmonkey.setBounds(20, 296, 137, 23);
+		btn_startmonkey.setBounds(161, 294, 137, 23);
 		add(btn_startmonkey);
 		
 		final JButton btn_stopMonkey = new JButton("停止monkey测试");
@@ -897,8 +930,291 @@ public class MonkeyTestPanel extends JPanel {
 				}).start();
 			}
 		});
-		btn_stopMonkey.setBounds(167, 296, 126, 23);
+		btn_stopMonkey.setBounds(705, 294, 126, 23);
 		add(btn_stopMonkey);
+		
+		JButton btn_monkeyoffline = new JButton("离线monkey测试");
+		btn_monkeyoffline.setHorizontalAlignment(SwingConstants.LEFT);
+		btn_monkeyoffline.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+//				#!/usr/bin/env bash
+				//获取选中包名
+				pkg=list.getSelectedValuesList();
+				if(pkg.size()==0){
+					showdialog("请选择测试包名");
+					return;
+				}
+//				if(choice_logpath==null||"".equals(choice_logpath)){
+//					showdialog("请选log存放路径");
+//					return;
+//				}
+				//log txt 文件
+				String date_now=DateUtil.format(new Date(), date_formate_role);
+				logfilename="monkeyLog_"+date_now+".txt";
+				File logfile=FileUtil.file(choice_logpath+logfilename);
+				if(logfile.exists()){
+					logfile.delete();
+				}
+				//去除logging
+				for (int i = 0; i < pkg.size(); i++) {
+					if(pkg.get(i).toString().equals("com.mediatek.mtklogger")){
+						pkg.remove(i);
+					}
+				}
+				//去除黑名单的包名
+				HashSet hs1 = new HashSet(pkg);
+		        HashSet hs2 = new HashSet(black_pkg);
+		        hs1.removeAll(hs2);
+		        List<String> listC = new ArrayList<String>();
+		        listC.addAll(hs1);
+		        pkg=listC;
+				//获取日志等级
+				level=combox_level.getSelectedItem().toString();
+				if(level.equals("低")){
+					level=" -v ";
+				}else if(level.equals("中")){
+					level=" -v -v ";
+				}else{
+					level=" -v -v -v ";
+				}
+				//获取事件间隔
+				event_space=Integer.parseInt(txt_throttle.getText());
+				//获取次数
+				if("".equals(txt_testcount.getText())){
+					JOptionPane.showMessageDialog(null, "请输入次数");
+					return;
+				}
+				if(event_space<200||event_space>500){
+					showdialog("事件间隔请输入200-500之间的数字");
+					return;
+				}
+				testcount=Integer.parseInt(txt_testcount.getText())*60*60*1000/event_space;
+				//获取seed
+				seed=Integer.parseInt(txt_seed.getText());
+				//获取是否crash继续
+				if(check_ignore_crashes.isSelected()){
+					crash_goon="--ignore-crashes";
+				}
+				//获取是否anr继续
+				if(check_ignore_anr.isSelected()){
+					anr_goon="--ignore-timeouts";
+				}
+				//获取异常停留界面
+				if(check_stay_exception.isSelected()){
+					exception_stay="--kill-process-after-error";
+				}
+				//获取监视代码
+				if(check_monitor_native_crashes.isSelected()){
+					lising_code="--monitor-native-crashes";
+				}
+				//获取report
+				if(check_creat_report.isSelected()){
+					generate_report="--hprof";
+				}
+				//获取触摸
+				if(!"".equals(txt_touch.getText())){
+					touchPersent=Integer.parseInt(txt_touch.getText());
+				}
+				//获取滑屏
+				if(!"".equals(txt_slip_screen.getText())){
+					motionPersent=Integer.parseInt(txt_slip_screen.getText());
+				}
+				//获取轨迹球事件
+				if(!"".equals(txt_ball.getText())){
+					trackballPersent=Integer.parseInt(txt_ball.getText());
+				}
+				//获取导航
+				if(!"".equals(txt_nav.getText())){
+					navPersent=Integer.parseInt(txt_nav.getText());
+				}
+				//获取旋转
+				if(!"".equals(txt_round.getText())){
+					turnonPersent=Integer.parseInt(txt_round.getText());
+				}
+				//获取主导航
+				if(!"".equals(txt_main_nav.getText())){
+					mainnavPersent=Integer.parseInt(txt_main_nav.getText());
+				}
+				//获取系统按键
+				if(!"".equals(txt_sys_key.getText())){
+					systemkeyPersent=Integer.parseInt(txt_sys_key.getText());
+				}
+				//获取app切换
+				if(!"".equals(txt_app_switch.getText())){
+					appswitchPersent=Integer.parseInt(txt_app_switch.getText());
+				}
+				//获取键盘翻转
+				if(!"".equals(txt_keyborad_round.getText())){
+					keyboardPersent=Integer.parseInt(txt_keyborad_round.getText());
+				}
+				//获取其他
+				if(!"".equals(txt_other.getText())){
+					otherPersent=Integer.parseInt(txt_other.getText());
+				}
+				long totalPersent=touchPersent+motionPersent+trackballPersent+navPersent+turnonPersent+mainnavPersent+systemkeyPersent+appswitchPersent+keyboardPersent+otherPersent;
+				if(totalPersent>100){
+					showdialog("事件总比例不能超过100%");
+					return;
+				}
+				monkey=new MonkeyString(pkg, level, testcount, event_space, seed, crash_goon, anr_goon, exception_stay, lising_code, generate_report, touchPersent, motionPersent, trackballPersent, navPersent, turnonPersent, mainnavPersent, systemkeyPersent, appswitchPersent, keyboardPersent, otherPersent);
+				monkey.setPkg(pkg);
+				System.out.println("monkey的实体参数为："+monkey.toString());
+				//生成monkey命令
+				final StringBuilder sb =new StringBuilder();
+				sb.append(" monkey ");
+				//加上包名
+				for(int i =0;i<monkey.getPkg().size();i++){
+					sb.append("-p "+pkg.get(i).toString()+" ");
+				}
+				//加上配置
+				//seed
+				sb.append("-s "+monkey.getSeed()+" ");
+				//事件间隔
+				sb.append("--throttle "+monkey.getEvent_space()+" ");
+				//crash
+				sb.append(monkey.getCrash_goon()+" ");
+				//anr
+				sb.append(monkey.getAnr_goon()+" ");
+				//许可
+//				sb.append(monkey.getSecurity_goon()+" ");
+				//异常停留
+				sb.append(monkey.getException_stay()+" ");
+				//监视代码
+				sb.append(monkey.getLising_code()+" ");
+				//report
+				sb.append(monkey.getGenerate_report()+" ");
+				//事件比例
+				//触摸
+				sb.append("--pct-touch "+monkey.getTouchPersent()+" ");
+				//滑屏
+				sb.append("--pct-motion "+monkey.getMotionPersent()+" ");
+				//轨迹球
+				sb.append("--pct-trackball "+monkey.getTrackballPersent()+" ");
+				//导航
+				sb.append("--pct-nav "+monkey.getNavPersent()+" ");
+				//旋转
+				sb.append("--pct-rotation "+monkey.getTurnonPersent()+" ");
+				//主导航
+				sb.append("--pct-majornav "+monkey.getMainnavPersent()+" ");
+				//系统按键
+				sb.append("--pct-syskeys "+monkey.getSystemkeyPersent()+" ");
+				//app切换
+				sb.append("--pct-appswitch "+monkey.getAppswitchPersent()+" ");
+				//键盘翻转
+				sb.append("--pct-flip "+monkey.getKeyboardPersent()+" ");
+				//其他
+				sb.append("--pct-anyevent "+monkey.getOtherPersent()+" ");
+				//日志
+				sb.append(monkey.getLevel());
+				//次数
+				sb.append(testcount);
+				//日志路径
+				sb.append(">"+"/sdcard/"+logfilename);
+				
+				System.out.println(sb.toString());
+				//运行时的路径
+				final File f = new File(this.getClass().getResource("/").getPath());
+				File shfile=FileUtil.file(f+"/monkey.sh");
+				if(shfile.exists()){
+					shfile.delete();
+				}
+				FileWriter fw=new FileWriter(FileUtil.file(f+"/monkey.sh"));
+				fw.append("#!/usr/bin/env bash \n");
+				fw.append(sb.toString());
+				TextUtil.insertDocument("正在启动monkey...", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						try {
+							CmdUtil.excuteCMDCommand_str("adb shell rm -rf /data/local/tmp/monkey.sh");
+							CmdUtil.excuteCMDCommand_str("adb push "+f+"/monkey.sh /data/local/tmp/");
+							CmdUtil.excuteCMDCommand_str("adb shell sh /data/local/tmp/monkey.sh&");
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}).start();
+				new Thread(new  Runnable() {
+					public void run() {
+						try {
+							TextUtil.insertDocument("初始化...", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+							Thread.sleep(5000);
+							TextUtil.insertDocument("初始化完成!", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+							String result=CmdUtil.excuteCMDCommand_str("adb shell ps -A|findstr monkey");
+							if(!"".equals(result)){
+								TextUtil.insertDocument("启动monkey成功!", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								TextUtil.insertDocument("测试时间"+txt_testcount.getText()+"小时...", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								Thread.sleep(800);
+								TextUtil.insertDocument("日志等级"+combox_level.getSelectedItem().toString()+"...", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								Thread.sleep(800);
+								TextUtil.insertDocument("monkeylog文件路径:【/sdcard/"+logfilename+"】", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								
+								off_log_name="/sdcard/"+logfilename;
+								
+								Thread.sleep(800);
+								TextUtil.insertDocument("测试应用", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								for (int i = 0; i < pkg.size(); i++) {
+									TextUtil.insertDocument(pkg.get(i).toString(), ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+									Thread.sleep(100);
+								}
+								Thread.sleep(800);
+								TextUtil.insertDocument("黑名单应用", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								for (int j = 0; j < black_pkg.size(); j++) {
+									TextUtil.insertDocument(black_pkg.get(j).toString(), ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+									Thread.sleep(100);
+								}
+								return;
+							}else{
+								TextUtil.insertDocument("启动monkey失败，可能选择的包不支持!", ColorEnum.ERRORCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								return;
+							}
+						} catch (InterruptedException e) {
+							return;
+						}
+					}
+				}).start();
+			}
+		});
+		btn_monkeyoffline.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_monkeyoffline.setBounds(366, 294, 126, 23);
+		add(btn_monkeyoffline);
+		
+		JButton btn_choice_log_path = new JButton("选择log保存路径");
+		btn_choice_log_path.setBounds(20, 294, 131, 23);
+		add(btn_choice_log_path);
+		btn_choice_log_path.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("选择文件夹");
+				fileChooser.setApproveButtonText("确定");
+				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int result = fileChooser.showOpenDialog(getParent());
+				if (JFileChooser.APPROVE_OPTION == result) {
+					choice_logpath=fileChooser.getSelectedFile().getPath().trim();
+					System.out.println(choice_logpath);
+					TextUtil.insertDocument("选择的路径为:"+choice_logpath, ColorEnum.INFOCOLOR.getColor(),txt_show ,ColorEnum.ERRORCOLOR.getColor());
+				}
+			}
+		});
+		btn_choice_log_path.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		
+		JButton btn_search_offLog = new JButton("离线monkey日志");
+		btn_search_offLog.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(off_log_name==null ||"".equals(off_log_name)){
+					showdialog("查看错误,可能无log文件，请手动去sdcard下查看。");
+					return;
+				}
+				TextUtil.insertDocument("离线log路径:【"+off_log_name+"】\n"
+						+ "因为每个人电脑权限可能不一样，可能导出失败，请手动导出.", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+			}
+		});
+		btn_search_offLog.setHorizontalAlignment(SwingConstants.LEFT);
+		btn_search_offLog.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_search_offLog.setBounds(495, 294, 126, 23);
+		add(btn_search_offLog);
 		//全选按钮点击事件
 		checkbox_all.addMouseListener(new MouseAdapter() {
 			@Override
