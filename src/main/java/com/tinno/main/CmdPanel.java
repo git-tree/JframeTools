@@ -12,9 +12,9 @@ public class CmdPanel extends JPanel {
 	public CmdPanel() {
 		setLayout(null);
 		
-		JLabel lblCmd = new JLabel("cmd");
+		JLabel lblCmd = new JLabel("cmd更新中..");
 		lblCmd.setFont(new Font("宋体", Font.PLAIN, 40));
-		lblCmd.setBounds(157, 55, 187, 103);
+		lblCmd.setBounds(77, 70, 248, 103);
 		add(lblCmd);
 
 	}
