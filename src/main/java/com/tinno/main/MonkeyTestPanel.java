@@ -434,7 +434,7 @@ public class MonkeyTestPanel extends JPanel {
 		
 		JPanel panel_event = new JPanel();
 		panel_event.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "\u4E8B\u4EF6\u6BD4\u4F8B(%)", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_event.setBounds(705, 21, 215, 265);
+		panel_event.setBounds(705, 10, 215, 276);
 		add(panel_event);
 		panel_event.setLayout(null);
 		
