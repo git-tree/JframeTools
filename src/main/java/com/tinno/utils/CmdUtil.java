@@ -220,6 +220,52 @@ public class CmdUtil {
 	public static void main(String[] args) throws IOException {
 		// com.github.uiautomator
 		// System.out.println(check_isappInstalled("com.qiyi.video"));
+		
 	}
-
+	/**
+	 * 判断是否为亮屏
+	 * @return true为亮屏,false灭屏
+	 */
+	public static boolean isScreenOn(){
+		String command="adb shell dumpsys power | findstr \"Display Power:state=\"";
+		boolean flag=false;
+		String result=excuteCMDCommand_str(command);
+		if(result.contains("Display Power: state=ON")){
+			//亮屏
+			flag=true;
+		}
+		return flag;
+	}
+	/**
+	 * 保持亮屏
+	 */
+	public static void makeScreenOn(){
+		if(!isScreenOn()){
+			excuteCMDCommand_str("adb shell input keyevent 26");
+		}
+	}
+	/**
+	 * 屏幕常亮
+	 */
+	public static void setalways_screenon(){
+		makeScreenOn();
+		excuteCMDCommand_str("adb shell settings put system screen_off_timeout 999999999");
+	}
+	/**
+	 * 设置亮屏时间
+	 * @param min 分钟
+	 */
+	public static void setscreen_off_timeout(double min){
+		int time=1*60*1000;
+		try {
+			time=(int) (min*60*1000);
+			excuteCMDCommand_str("adb shell settings put system screen_off_timeout "+time+"");
+			System.out.println(time);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			time=1*60*1000;
+			excuteCMDCommand_str("adb shell settings put system screen_off_timeout "+time+"");
+		}
+	}
 }

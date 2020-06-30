@@ -11,6 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -39,6 +40,7 @@ import com.tinno.pojo.MonkeyString;
 import com.tinno.utils.CmdUtil;
 import com.tinno.utils.TextUtil;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 
@@ -86,7 +88,8 @@ public class MonkeyTestPanel extends JPanel {
 	private JTextField txt_black_pkg;
 	private String choicepath;
 	private String choice_logpath;
-	private String logfilename="monkeyLog.txt";
+	private String logfilename="";
+	private final String date_formate_role="yyyyMMddHHmmss";
 	/**
 	 * Create the panel.
 	 */
@@ -287,14 +290,14 @@ public class MonkeyTestPanel extends JPanel {
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		scrollPane.setViewportView(txt_show);
 		
-		JButton btn_clear_log = new JButton("清空");
+		JButton btn_clear_log = new JButton("清空日志");
 		btn_clear_log.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		btn_clear_log.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				txt_show.setText("");
 			}
 		});
-		btn_clear_log.setBounds(819, 10, 70, 23);
+		btn_clear_log.setBounds(795, 10, 94, 23);
 		panel_log.add(btn_clear_log);
 		
 		JPanel panel_base_setting = new JPanel();
@@ -437,7 +440,7 @@ public class MonkeyTestPanel extends JPanel {
 		panel_event.add(lblNewLabel_4);
 		
 		txt_touch = new JTextField();
-		txt_touch.setText("10");
+		txt_touch.setText("15");
 		txt_touch.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -512,7 +515,7 @@ public class MonkeyTestPanel extends JPanel {
 		panel_event.add(lblNewLabel_4_1_4_1_2);
 		
 		txt_ball = new JTextField();
-		txt_ball.setText("10");
+		txt_ball.setText("2");
 		txt_ball.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -527,7 +530,7 @@ public class MonkeyTestPanel extends JPanel {
 		panel_event.add(txt_ball);
 		
 		txt_round = new JTextField();
-		txt_round.setText("10");
+		txt_round.setText("5");
 		txt_round.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -542,7 +545,7 @@ public class MonkeyTestPanel extends JPanel {
 		panel_event.add(txt_round);
 		
 		txt_sys_key = new JTextField();
-		txt_sys_key.setText("10");
+		txt_sys_key.setText("2");
 		txt_sys_key.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -557,7 +560,7 @@ public class MonkeyTestPanel extends JPanel {
 		panel_event.add(txt_sys_key);
 		
 		txt_keyborad_round = new JTextField();
-		txt_keyborad_round.setText("10");
+		txt_keyborad_round.setText("1");
 		txt_keyborad_round.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -572,7 +575,7 @@ public class MonkeyTestPanel extends JPanel {
 		panel_event.add(txt_keyborad_round);
 		
 		txt_nav = new JTextField();
-		txt_nav.setText("10");
+		txt_nav.setText("25");
 		txt_nav.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -587,7 +590,7 @@ public class MonkeyTestPanel extends JPanel {
 		panel_event.add(txt_nav);
 		
 		txt_main_nav = new JTextField();
-		txt_main_nav.setText("10");
+		txt_main_nav.setText("15");
 		txt_main_nav.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -602,7 +605,7 @@ public class MonkeyTestPanel extends JPanel {
 		panel_event.add(txt_main_nav);
 		
 		txt_app_switch = new JTextField();
-		txt_app_switch.setText("10");
+		txt_app_switch.setText("5");
 		txt_app_switch.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -617,7 +620,7 @@ public class MonkeyTestPanel extends JPanel {
 		panel_event.add(txt_app_switch);
 		
 		txt_other = new JTextField();
-		txt_other.setText("10");
+		txt_other.setText("15");
 		txt_other.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -631,9 +634,9 @@ public class MonkeyTestPanel extends JPanel {
 		txt_other.setBounds(160, 189, 33, 21);
 		panel_event.add(txt_other);
 		
-		JButton btnNewButton = new JButton("开始");
-		btnNewButton.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton btn_startmonkey = new JButton("开始monkey测试");
+		btn_startmonkey.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_startmonkey.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//获取选中包名
 				pkg=list.getSelectedValuesList();
@@ -646,6 +649,8 @@ public class MonkeyTestPanel extends JPanel {
 					return;
 				}
 				//log txt 文件
+				String date_now=DateUtil.format(new Date(), date_formate_role);
+				logfilename="monkeyLog_"+date_now+".txt";
 				File logfile=FileUtil.file(choice_logpath+logfilename);
 				if(logfile.exists()){
 					logfile.delete();
@@ -746,7 +751,11 @@ public class MonkeyTestPanel extends JPanel {
 				if(!"".equals(txt_other.getText())){
 					otherPersent=Integer.parseInt(txt_other.getText());
 				}
-				
+				long totalPersent=touchPersent+motionPersent+trackballPersent+navPersent+turnonPersent+mainnavPersent+systemkeyPersent+appswitchPersent+keyboardPersent+otherPersent;
+				if(totalPersent>100){
+					showdialog("事件总比例不能超过100%");
+					return;
+				}
 				monkey=new MonkeyString(pkg, level, testcount, event_space, seed, crash_goon, anr_goon, exception_stay, lising_code, generate_report, touchPersent, motionPersent, trackballPersent, navPersent, turnonPersent, mainnavPersent, systemkeyPersent, appswitchPersent, keyboardPersent, otherPersent);
 				monkey.setPkg(pkg);
 				System.out.println("monkey的实体参数为："+monkey.toString());
@@ -806,6 +815,8 @@ public class MonkeyTestPanel extends JPanel {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
+						//屏幕常亮
+						CmdUtil.setalways_screenon();
 						CmdUtil.excuteCMDCommand_str(sb.toString(),false);
 					}
 				}).start();
@@ -813,9 +824,9 @@ public class MonkeyTestPanel extends JPanel {
 				new Thread(new  Runnable() {
 					public void run() {
 						try {
-							System.out.println("sleep开始");
-							Thread.sleep(5000);
-							System.out.println("sleepend");
+							TextUtil.insertDocument("初始化...", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+							Thread.sleep(4000);
+							TextUtil.insertDocument("初始化完成!", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 							String result=CmdUtil.excuteCMDCommand_str("adb shell ps -A|findstr monkey");
 							if(!"".equals(result)){
 								TextUtil.insertDocument("启动monkey成功!", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
@@ -847,12 +858,12 @@ public class MonkeyTestPanel extends JPanel {
 				
 			}
 		});
-		btnNewButton.setBounds(20, 296, 93, 23);
-		add(btnNewButton);
+		btn_startmonkey.setBounds(20, 296, 137, 23);
+		add(btn_startmonkey);
 		
-		JButton btnNewButton_1 = new JButton("停止");
-		btnNewButton_1.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		btnNewButton_1.addActionListener(new ActionListener() {
+		final JButton btn_stopMonkey = new JButton("停止monkey测试");
+		btn_stopMonkey.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_stopMonkey.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
 				new Thread(new Runnable() {
@@ -860,22 +871,34 @@ public class MonkeyTestPanel extends JPanel {
 					public void run() {
 						// TODO Auto-generated method stub
 						String res=CmdUtil.excuteCMDCommand_str("adb shell ps -A|findstr monkey");
+						if(res.length()==0){
+							TextUtil.insertDocument("无monkey任务..", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+							return;
+						}
 						String [] resarr=res.split("\n");
 						TextUtil.insertDocument("正在停止..", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
-						for (int i = 0; i < resarr.length; i++) {
-							System.out.println(resarr[i]+i);
-							for(int j=0;j<resarr[i].split(" ").length;j++){
-								CmdUtil.excuteCMDCommand_str("adb shell kill -9 "+resarr[i].split(" ")[j]);
+						btn_stopMonkey.setEnabled(false);
+						try {
+							for (int i = 0; i < resarr.length; i++) {
+								System.out.println(resarr[i]+i);
+								for(int j=0;j<resarr[i].split(" ").length;j++){
+									CmdUtil.excuteCMDCommand_str("adb shell kill -9 "+resarr[i].split(" ")[j]);
+								}
 							}
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							TextUtil.insertDocument("停止失败！", ColorEnum.ERRORCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+							btn_stopMonkey.setEnabled(true);
 						}
+						btn_stopMonkey.setEnabled(true);
 						TextUtil.insertDocument("停止成功！", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 					}
 					
 				}).start();
 			}
 		});
-		btnNewButton_1.setBounds(123, 296, 93, 23);
-		add(btnNewButton_1);
+		btn_stopMonkey.setBounds(167, 296, 126, 23);
+		add(btn_stopMonkey);
 		//全选按钮点击事件
 		checkbox_all.addMouseListener(new MouseAdapter() {
 			@Override

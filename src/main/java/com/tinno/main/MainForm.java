@@ -139,6 +139,7 @@ public class MainForm extends JFrame {
 								.getImage(this.getClass().getResource("logo.png"));
 						frame.setIconImage(frame_icon);
 						frame.setVisible(true);
+						CmdUtil.makeScreenOn();
 					} else {
 						JOptionPane.showMessageDialog(null, "请检查设备是否打开USB调试,adb环境是否OK。", "提示",
 								JOptionPane.ERROR_MESSAGE);
