@@ -95,6 +95,7 @@ public class MonkeyTestPanel extends JPanel {
 	private final String date_formate_role="yyyyMMddHHmmss";
 	private String off_log_name;
 	private JCheckBox check_ignore_anr;
+	private String monkey_dir_name;
 	/**
 	 * Create the panel.
 	 */
@@ -681,13 +682,15 @@ public class MonkeyTestPanel extends JPanel {
 					showdialog("请选log存放路径");
 					return;
 				}
-				//log txt 文件
 				String date_now=DateUtil.format(new Date(), date_formate_role);
-				logfilename="monkeyLog_"+date_now+".txt";
-				File logfile=FileUtil.file(choice_logpath+logfilename);
-				if(logfile.exists()){
-					logfile.delete();
-				}
+				//创建文件夹
+				monkey_dir_name=FileUtil.mkdir(choice_logpath+"monkey_"+date_now).getAbsolutePath();//eg:e:/monkey_202005310624
+				//log txt 文件名
+//				logfilename="monkeyLog_"+date_now+".txt";
+//				File logfile=FileUtil.file(choice_logpath+logfilename);
+//				if(logfile.exists()){
+//					logfile.delete();
+//				}
 				//去除logging
 				for (int i = 0; i < pkg.size(); i++) {
 					if(pkg.get(i).toString().equals("com.mediatek.mtklogger")){
@@ -841,7 +844,8 @@ public class MonkeyTestPanel extends JPanel {
 				sb.append(monkey.getLevel());
 				//次数
 				sb.append(testcount);
-				sb.append(">"+choice_logpath+logfilename);
+				//路径，文件夹_日期/info.txt  和 error.txt  如e:/monkey_20200530/info.txt,e:/monkey_20200530/error.txt
+				sb.append(" 2>"+monkey_dir_name+"/monkey_error.txt 1>"+monkey_dir_name+"/monkey_info.txt");
 				System.out.println(sb.toString());
 				TextUtil.insertDocument("正在启动monkey...", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 				new Thread(new Runnable() {
@@ -955,12 +959,17 @@ public class MonkeyTestPanel extends JPanel {
 				if(logfile.exists()){
 					logfile.delete();
 				}
+				//创建文件夹
+				CmdUtil.excuteCMDCommand_str("adb shell mkdir /sdcard/monkey_"+date_now);//eg:e:/monkey_202005310624
+				monkey_dir_name="/sdcard/monkey_"+date_now;
+				System.out.println(monkey_dir_name);
 				//去除logging
 				for (int i = 0; i < pkg.size(); i++) {
 					if(pkg.get(i).toString().equals("com.mediatek.mtklogger")){
 						pkg.remove(i);
 					}
 				}
+				System.out.println(monkey_dir_name);
 				//去除黑名单的包名
 				HashSet hs1 = new HashSet(pkg);
 		        HashSet hs2 = new HashSet(black_pkg);
@@ -1109,7 +1118,7 @@ public class MonkeyTestPanel extends JPanel {
 				//次数
 				sb.append(testcount);
 				//日志路径
-				sb.append(">"+"/sdcard/"+logfilename);
+				sb.append(" 2>"+monkey_dir_name+"/monkey_error.txt 1>"+monkey_dir_name+"/monkey_info.txt");
 				
 				System.out.println(sb.toString());
 				//运行时的路径
@@ -1150,9 +1159,6 @@ public class MonkeyTestPanel extends JPanel {
 								TextUtil.insertDocument("日志等级"+combox_level.getSelectedItem().toString()+"...", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 								Thread.sleep(800);
 								TextUtil.insertDocument("monkeylog文件路径:【/sdcard/"+logfilename+"】", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
-								
-								off_log_name="/sdcard/"+logfilename;
-								
 								Thread.sleep(800);
 								TextUtil.insertDocument("测试应用", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 								for (int i = 0; i < pkg.size(); i++) {
@@ -1203,11 +1209,11 @@ public class MonkeyTestPanel extends JPanel {
 		JButton btn_search_offLog = new JButton("离线monkey日志");
 		btn_search_offLog.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(off_log_name==null ||"".equals(off_log_name)){
+				if(monkey_dir_name==null ||"".equals(monkey_dir_name)){
 					showdialog("查看错误,可能无log文件，请手动去sdcard下查看。");
 					return;
 				}
-				TextUtil.insertDocument("离线log路径:【"+off_log_name+"】\n"
+				TextUtil.insertDocument("离线log文件夹路径:【"+monkey_dir_name+"】\n"
 						+ "因为每个人电脑权限可能不一样，可能导出失败，请手动导出.", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 			}
 		});

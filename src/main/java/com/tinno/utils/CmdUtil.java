@@ -10,6 +10,8 @@ import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.hutool.core.io.FileUtil;
+
 public class CmdUtil {
 
 	public static boolean excuteCMDCommand(String cmdCommand) {
@@ -220,7 +222,9 @@ public class CmdUtil {
 	public static void main(String[] args) throws IOException {
 		// com.github.uiautomator
 		// System.out.println(check_isappInstalled("com.qiyi.video"));
-	}
+		System.out.println(
+				FileUtil.mkdir("e:/monkey").getAbsolutePath());
+		}
 	/**
 	 * 判断是否为亮屏
 	 * @return true为亮屏,false灭屏
