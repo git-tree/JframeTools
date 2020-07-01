@@ -13,6 +13,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -156,8 +157,9 @@ public class MainForm extends JFrame {
 	 * Create the frame.
 	 * 
 	 * @throws IOException
+	 * @throws PropertyVetoException 
 	 */
-	public MainForm() throws IOException {
+	public MainForm() throws IOException, PropertyVetoException {
 		setResizable(false);
 		setTitle("工具tools_V2.0");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

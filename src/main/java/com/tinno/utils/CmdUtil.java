@@ -240,10 +240,18 @@ public class CmdUtil {
 		return flag;
 	}
 	/**
-	 * 保持亮屏
+	 * 点亮屏幕
 	 */
 	public static void makeScreenOn(){
 		if(!isScreenOn()){
+			excuteCMDCommand_str("adb shell input keyevent 26");
+		}
+	}
+	/**
+	 * 灭屏
+	 */
+	public static void makeScreenOff(){
+		if(isScreenOn()){
 			excuteCMDCommand_str("adb shell input keyevent 26");
 		}
 	}
