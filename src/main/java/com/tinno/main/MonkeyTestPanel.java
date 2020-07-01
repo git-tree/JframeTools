@@ -1158,7 +1158,7 @@ public class MonkeyTestPanel extends JPanel {
 								Thread.sleep(800);
 								TextUtil.insertDocument("日志等级"+combox_level.getSelectedItem().toString()+"...", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 								Thread.sleep(800);
-								TextUtil.insertDocument("monkeylog文件路径:【/sdcard/"+logfilename+"】", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								TextUtil.insertDocument("monkeylog文件路径:【"+monkey_dir_name+"】", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 								Thread.sleep(800);
 								TextUtil.insertDocument("测试应用", ColorEnum.CHOCPLATECOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 								for (int i = 0; i < pkg.size(); i++) {
