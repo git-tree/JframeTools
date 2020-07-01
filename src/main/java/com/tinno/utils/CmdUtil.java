@@ -279,4 +279,23 @@ public class CmdUtil {
 			excuteCMDCommand_str("adb shell settings put system screen_off_timeout "+time+"");
 		}
 	}
+	/**
+	 * 设置设备插上数据线不充电
+	 */
+	public static void setBatteryUnplug(){
+		excuteCMDCommand_str("adb shell dumpsys battery unplug");
+	}
+	/**
+	 * 重置电池设置
+	 */
+	public static void resetBattery(){
+		excuteCMDCommand_str("adb shell dumpsys battery reset");
+	}
+	/**
+	 * 设置电池电量
+	 * @param level
+	 */
+	public static void setbatteryLevel(int level){
+		excuteCMDCommand_str("adb shell dumpsys battery set level "+level);
+	}
 }
