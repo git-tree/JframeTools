@@ -9,6 +9,9 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import com.github.javafaker.Faker;
 
 import cn.hutool.core.io.FileUtil;
 
@@ -222,8 +225,13 @@ public class CmdUtil {
 	public static void main(String[] args) throws IOException {
 		// com.github.uiautomator
 		// System.out.println(check_isappInstalled("com.qiyi.video"));
-		System.out.println(
-				FileUtil.mkdir("e:/monkey").getAbsolutePath());
+//		System.out.println(
+//				FileUtil.mkdir("e:/monkey").getAbsolutePath());
+			Faker fake=new Faker(new Locale("zh-CN"));
+			for (int i = 0; i <10; i++) {
+				System.out.println("名字:"+fake.name().fullName()+"\n"
+						+ "手机号:"+fake.phoneNumber().cellPhone()+"\n");
+			}
 		}
 	/**
 	 * 判断是否为亮屏
