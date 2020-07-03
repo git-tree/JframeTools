@@ -1,19 +1,13 @@
 package com.tinno.utils;
 
-import java.awt.Toolkit;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-
 import com.github.javafaker.Faker;
 
-import cn.hutool.core.io.FileUtil;
+import cn.hutool.system.oshi.OshiUtil;
+
 
 public class CmdUtil {
 
@@ -38,7 +32,11 @@ public class CmdUtil {
 		}
 		return flag;
 	}
-
+	/**
+	 * 执行cmd命令。
+	 * @param cmdCommand cmd命令
+	 * @return 命令结果
+	 */
 	public static String excuteCMDCommand_str(String cmdCommand) {
 		StringBuilder stringBuilder = new StringBuilder();
 		Process process = null;
@@ -58,6 +56,12 @@ public class CmdUtil {
 		return result;
 	}
 	//打印cmd执行的log
+	/**
+	 * 打印执行cmd的结果
+	 * @param cmdCommand cmd命令
+	 * @param isprintLog 是否打印log
+	 * @return true,打印log,false不打印
+	 */
 	public static String excuteCMDCommand_str(String cmdCommand,boolean isprintLog) {
 		StringBuilder stringBuilder = new StringBuilder();
 		Process process = null;
@@ -79,6 +83,11 @@ public class CmdUtil {
 		}
 		return result;
 	}
+	/**
+	 * 检查是否安装app成功
+	 * @param pkg 包名
+	 * @return true安装成功,false,安装失败
+	 */
 	public static boolean check_isappInstalled(String pkg) {
 		String result = excuteCMDCommand_str("adb shell pm list packages").replace("package:", "");
 		// System.out.println(result);
@@ -173,8 +182,10 @@ public class CmdUtil {
 		return flag;
 	}
 
-	/*
-	 * 通过传入包名获取activity
+	/**
+	 * 通过包名获取activity
+	 * @param pkgName
+	 * @return
 	 */
 	public static String pkgTostartCommand(String pkgName) {
 		String command = "adb shell dumpsys package  " + pkgName + "  |findstr \"Activity Resolver Table:\"";
@@ -202,7 +213,11 @@ public class CmdUtil {
 		}
 		return result;
 	}
-
+	/**
+	 * 通过包名启动app
+	 * @param pkg
+	 * @return
+	 */
 	public static boolean startAppBystartBypkg(String pkg) {
 		String result = pkgTostartCommand(pkg);
 		boolean flag = false;
@@ -221,7 +236,11 @@ public class CmdUtil {
 		}
 		return flag;
 	}
-
+	/**
+	 * 测试主函数
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
 		// com.github.uiautomator
 		// System.out.println(check_isappInstalled("com.qiyi.video"));
@@ -232,6 +251,7 @@ public class CmdUtil {
 				System.out.println("名字:"+fake.name().fullName()+"\n"
 						+ "手机号:"+fake.phoneNumber().cellPhone()+"\n");
 			}
+		
 		}
 	/**
 	 * 判断是否为亮屏

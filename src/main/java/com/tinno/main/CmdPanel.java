@@ -20,6 +20,7 @@ import com.tinno.utils.TextUtil;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
+import dk.brics.automaton.RunAutomaton;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -31,6 +32,8 @@ import java.awt.Component;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import java.awt.SystemColor;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class CmdPanel extends JPanel {
 	private String choicepath;
@@ -206,7 +209,7 @@ public class CmdPanel extends JPanel {
 		frame_screen.setVisible(true);
 		panel_frames.add(frame_screen);
 		
-		final JInternalFrame frame_battery = new JInternalFrame("电池");
+		final JInternalFrame frame_battery = new JInternalFrame("电池相关");
 		frame_battery.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame_battery.setResizable(true);
 		frame_battery.setMaximizable(true);
@@ -300,24 +303,35 @@ public class CmdPanel extends JPanel {
 		frame_battery.getContentPane().add(btn_setbattery_level);
 		frame_battery.setVisible(true);
 		
-		JButton btn_about_screen = new JButton("屏幕相关");
+		final JButton btn_about_screen = new JButton("屏幕相关");
 		btn_about_screen.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		btn_about_screen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				frame_screen.show();
+				closeOtherTab(btn_about_screen.getText());
 			}
 		});
 		btn_about_screen.setBounds(10, 10, 93, 23);
 		panel.add(btn_about_screen);
 		
-		JButton btn_about_bttery = new JButton("电池相关");
+		final JButton btn_about_bttery = new JButton("电池相关");
 		btn_about_bttery.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame_battery.show();
+				closeOtherTab(btn_about_bttery.getText());
 			}
 		});
 		btn_about_bttery.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		btn_about_bttery.setBounds(113, 10, 93, 23);
 		panel.add(btn_about_bttery);
+	}
+	
+	private void closeOtherTab(String name){
+		for (int i = 0; i < panel_frames.getComponentCount(); i++) {
+			JInternalFrame f= (JInternalFrame) panel_frames.getComponent(i);
+			if(!name.equals(f.getTitle())){
+				f.setVisible(false);
+			}
+		}
 	}
 }
