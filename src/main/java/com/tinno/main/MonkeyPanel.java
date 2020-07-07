@@ -27,6 +27,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultCaret;
 
+import com.tinno.utils.JFrameutil;
 import com.tinno.utils.TextUtil;
 
 import cn.hutool.core.collection.CollUtil;
@@ -62,6 +63,8 @@ public class MonkeyPanel extends JPanel {
 	private Color infocolor = Color.BLUE;// 蓝色
 	private Color okcolor = new Color(0, 128, 0);// 绿色
 	private Color chocolate = new Color(210, 105, 30);// 巧克力
+	private String choice_path_decode;
+	private  JTextPane txt_show; 
 	/**
 	 * Create the panel.
 	 */
@@ -107,6 +110,40 @@ public class MonkeyPanel extends JPanel {
 		label.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		label.setBounds(10, 25, 90, 15);
 		panel_Qr.add(label);
+		
+		JButton btn_choiceQrPic = new JButton("选择二维码");
+		btn_choiceQrPic.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("选择文件夹");
+				fileChooser.setApproveButtonText("确定");
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				int result = fileChooser.showOpenDialog(getParent());
+				if (JFileChooser.APPROVE_OPTION == result) {
+					choice_path_decode=fileChooser.getSelectedFile().getPath().trim();
+					System.out.println(choice_path_decode);
+				}
+			}
+		});
+		btn_choiceQrPic.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_choiceQrPic.setBounds(526, 21, 93, 23);
+		panel_Qr.add(btn_choiceQrPic);
+		
+		JButton btn_decodeQr = new JButton("解析二维码");
+		btn_decodeQr.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(choice_path_decode==null ||"".equals(choice_path_decode)){
+					JFrameutil.showdialog("请选择二维码!");
+					return;
+				}
+				String res=QrCodeUtil.decode(FileUtil.file(choice_path_decode));
+				TextUtil.insertDocument_cho(res, txt_show);
+				
+			}
+		});
+		btn_decodeQr.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_decodeQr.setBounds(629, 21, 93, 23);
+		panel_Qr.add(btn_decodeQr);
 		
 		JPanel panel_img = new JPanel();
 		panel_img.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "\u56FE\u7247\u76F8\u5173", TitledBorder.LEFT, TitledBorder.TOP, null, new Color(0, 0, 0)));
@@ -332,7 +369,7 @@ public class MonkeyPanel extends JPanel {
 		btn_split_word.setBounds(346, 17, 93, 23);
 		panel_word.add(btn_split_word);
 		
-		final JTextPane txt_show = new JTextPane();
+		txt_show= new JTextPane();
 		
 		JScrollPane jsp = new JScrollPane();
 		jsp.setFont(new Font("微软雅黑", Font.PLAIN, 12));
