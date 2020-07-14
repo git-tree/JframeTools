@@ -284,24 +284,6 @@ public class CmdPanel extends JPanel {
 				frame_screen.getContentPane().add(panel_2);
 				panel_2.setLayout(null);
 				
-				JButton btn_choice_path = new JButton("选择地址");
-				btn_choice_path.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						JFileChooser fileChooser = new JFileChooser();
-						fileChooser.setDialogTitle("选择地址");
-						fileChooser.setApproveButtonText("确定");
-						fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-						int result = fileChooser.showOpenDialog(getParent());
-						if (JFileChooser.APPROVE_OPTION == result) {
-							choicepath=fileChooser.getSelectedFile().getPath().trim();
-							System.out.println(choicepath);
-						}
-					}
-				});
-				btn_choice_path.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-				btn_choice_path.setBounds(59, 10, 93, 23);
-				panel_2.add(btn_choice_path);
-				
 				JButton btn_choice_path_1 = new JButton("检查adb环境");
 				btn_choice_path_1.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -365,6 +347,18 @@ public class CmdPanel extends JPanel {
 						lblNewLabel.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 						lblNewLabel.setBounds(10, 61, 78, 15);
 						frame_screen.getContentPane().add(lblNewLabel);
+						
+						JButton btn_make_screen_off_2 = new JButton("重置");
+						btn_make_screen_off_2.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent arg0) {
+								//重置
+								CmdUtil.setscreen_off_timeout(1);
+								TextUtil.insertDocument_success("重置成功，息屏时间为1分钟", txt_show);
+							}
+						});
+						btn_make_screen_off_2.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+						btn_make_screen_off_2.setBounds(10, 198, 93, 23);
+						frame_screen.getContentPane().add(btn_make_screen_off_2);
 				frame_screen.setVisible(true);
 		frame_battery.setVisible(true);
 		
