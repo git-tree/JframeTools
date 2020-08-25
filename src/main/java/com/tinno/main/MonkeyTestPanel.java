@@ -9,11 +9,17 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
@@ -30,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultCaret;
@@ -38,14 +45,17 @@ import com.tinno.enums.ColorEnum;
 import com.tinno.enums.PackageTypeEnum;
 import com.tinno.pojo.MonkeyString;
 import com.tinno.utils.CmdUtil;
+import com.tinno.utils.JFrameutil;
+import com.tinno.utils.TextFileUtil.TextFileSearch;
 import com.tinno.utils.TextUtil;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.io.file.FileWriter;
-
-import javax.swing.SwingConstants;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 
 public class MonkeyTestPanel extends JPanel {
 	private String cmdcommand="adb shell pm list packages ";
@@ -96,6 +106,8 @@ public class MonkeyTestPanel extends JPanel {
 	private String off_log_name;
 	private JCheckBox check_ignore_anr;
 	private String monkey_dir_name;
+	
+	private boolean istesting=false;
 	/**
 	 * Create the panel.
 	 */
@@ -867,6 +879,7 @@ public class MonkeyTestPanel extends JPanel {
 							String result=CmdUtil.excuteCMDCommand_str("adb shell ps -A|findstr monkey");
 							if(!"".equals(result)){
 								TextUtil.insertDocument("启动monkey成功!", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								istesting=true;
 								TextUtil.insertDocument("测试时间"+txt_testcount.getText()+"小时...", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 								Thread.sleep(800);
 								TextUtil.insertDocument("日志等级"+combox_level.getSelectedItem().toString()+"...", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
@@ -885,9 +898,11 @@ public class MonkeyTestPanel extends JPanel {
 								return;
 							}else{
 								TextUtil.insertDocument("启动monkey失败，可能选择的包不支持!", ColorEnum.ERRORCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+								istesting=false;
 								return;
 							}
 						} catch (InterruptedException e) {
+							istesting=false;
 							return;
 						}
 					}
@@ -895,7 +910,7 @@ public class MonkeyTestPanel extends JPanel {
 				
 			}
 		});
-		btn_startmonkey.setBounds(161, 294, 137, 23);
+		btn_startmonkey.setBounds(153, 294, 137, 23);
 		add(btn_startmonkey);
 		
 		final JButton btn_stopMonkey = new JButton("停止monkey测试");
@@ -934,7 +949,7 @@ public class MonkeyTestPanel extends JPanel {
 				}).start();
 			}
 		});
-		btn_stopMonkey.setBounds(705, 294, 126, 23);
+		btn_stopMonkey.setBounds(780, 296, 126, 23);
 		add(btn_stopMonkey);
 		
 		JButton btn_monkeyoffline = new JButton("离线monkey测试");
@@ -1184,7 +1199,7 @@ public class MonkeyTestPanel extends JPanel {
 			}
 		});
 		btn_monkeyoffline.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		btn_monkeyoffline.setBounds(366, 294, 126, 23);
+		btn_monkeyoffline.setBounds(460, 294, 126, 23);
 		add(btn_monkeyoffline);
 		
 		JButton btn_choice_log_path = new JButton("选择log保存路径");
@@ -1206,7 +1221,7 @@ public class MonkeyTestPanel extends JPanel {
 		});
 		btn_choice_log_path.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		
-		JButton btn_search_offLog = new JButton("离线monkey日志");
+		JButton btn_search_offLog = new JButton("导出离线日志");
 		btn_search_offLog.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(monkey_dir_name==null ||"".equals(monkey_dir_name)){
@@ -1219,8 +1234,113 @@ public class MonkeyTestPanel extends JPanel {
 		});
 		btn_search_offLog.setHorizontalAlignment(SwingConstants.LEFT);
 		btn_search_offLog.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		btn_search_offLog.setBounds(495, 294, 126, 23);
+		btn_search_offLog.setBounds(596, 294, 105, 23);
 		add(btn_search_offLog);
+		
+		JButton btn_report_monkeyresult = new JButton("结果报告");
+		btn_report_monkeyresult.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				//导出结果报告按钮
+				if(choice_logpath==null||"".equals(choice_logpath)){
+					JFrameutil.showdialog("请选择文件路径!");
+					return;
+				}
+				if(monkey_dir_name==null||"".equals(monkey_dir_name)){
+					JFrameutil.showdialog("未找到error.txt文件");
+					return;
+				}
+				// 1、获取map 的key，作为excel的行列，后面更新为读取关键字
+				java.io.FileReader fr=null;
+				// 关键字集合,读取关键字文本，或者界面上可操作，动态添加。
+				List<String> keywords_list = CollUtil.newArrayList();
+				try {
+					File directory = new File("");// 参数为空
+					String courseFile = directory.getCanonicalPath();
+					fr = new java.io.FileReader(FileUtil.file(courseFile+"/monkey_keywords.txt"));
+					BufferedReader br = new BufferedReader(fr);
+					String line = null;
+					
+						while ((line = br.readLine()) != null) {
+							System.out.println(line);
+							keywords_list.add(line);
+						}
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					keywords_list.add("ANR");
+					keywords_list.add("Exception");
+					keywords_list.add("Null");
+					keywords_list.add("Error");
+					keywords_list.add("CRASH");
+				}
+				
+				
+				// 2、通过方法获取每种异常的集合
+				// excel行数据map
+				ArrayList<Map<String, Object>> rows = CollUtil.newArrayList();
+				boolean testresult=true;
+				TextFileSearch search = new TextFileSearch();
+				List<Integer> sortlist = CollUtil.newArrayList();
+				List<List<String>> allmsglist=CollUtil.newArrayList();
+				
+				for (int i = 0; i < keywords_list.size(); i++) {
+					List<String> msglist=search.SearchKeyword(FileUtil.file(monkey_dir_name+"/monkey_error.txt"),keywords_list.get(i).toString());
+					sortlist.add(msglist.size());
+					allmsglist.add(msglist);
+					if(msglist.size()!=0){
+						testresult=false;
+					}
+				}
+				if(testresult){
+					Map<String, Object> row=new HashMap<String, Object>();
+					row.put("测试结果", "PASS");
+					rows.add(row);
+				}else{
+					// 排序，找到最大数，然后作为最大行数
+					Collections.sort(sortlist);
+					for (int j = 0; j < sortlist.get(sortlist.size() - 1); j++) {
+						Map<String, Object> row = new HashMap<String, Object>();
+						for (int k = 0; k < keywords_list.size(); k++) {
+							String value;
+							try {
+								value=allmsglist.get(k).get(j).toString();
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+//								发生数组越界异常,就给那个单元格设置内容为空，
+								value="";
+							}
+							row.put(keywords_list.get(k).toString(),value);
+						}
+						rows.add(row);
+					}
+				}
+				
+//				生成的表格格式大概如下:
+				/*
+				
+								|Exception|Error|Anr|Crash|
+								———————————————————————————
+								|xxxxxxxxx|xxxx |xx | xx  |
+								———————————————————————————
+								|xx       |     |x  |   x |
+								———————————————————————————
+								|         |     |   |   x |
+								———————————————————————————
+								
+				*/
+				// 通过工具类创建writer
+				ExcelWriter writer = ExcelUtil.getWriter(monkey_dir_name+"/monkey_Result.xlsx");
+				// 合并单元格后的标题行，使用默认标题样式
+				writer.merge(keywords_list.size()-1, "monkey测试结果(若有异常,异常详情可用notepad++打开error.txt定位行数查看具体异常)");
+				// 一次性写出内容，使用默认样式，强制输出标题
+				writer.write(rows, true);
+				// 关闭writer，释放内存
+				writer.close();
+				JFrameutil.showdialog("导出成功,路径"+monkey_dir_name+"/monkey_Result.xlsx");
+			}
+		});
+		btn_report_monkeyresult.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		btn_report_monkeyresult.setBounds(292, 294, 90, 23);
+		add(btn_report_monkeyresult);
 		//全选按钮点击事件
 		checkbox_all.addMouseListener(new MouseAdapter() {
 			@Override
