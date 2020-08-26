@@ -262,8 +262,8 @@ public class MonkeyPanel extends JPanel {
 //				System.out.println(com_after.toLowerCase());
 				try {
 					String now_date=DateUtil.format(new Date(),date_formate_role);
-					ImgUtil.convert(begin_convert_img, FileUtil.file(choice_path+"convert_"+now_date+"."+com_after.toLowerCase()));
-					JOptionPane.showMessageDialog(null, "转换成功,图片保存在"+choice_path+"converted."+com_after.toLowerCase());
+					ImgUtil.convert(begin_convert_img, FileUtil.file(choice_path+"/convert_"+now_date+"."+com_after.toLowerCase()));
+					JOptionPane.showMessageDialog(null, "转换成功,图片保存在"+choice_path+"/converted."+com_after.toLowerCase());
 				} catch (HeadlessException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -311,8 +311,8 @@ public class MonkeyPanel extends JPanel {
 				}
 				try {
 					String date_now=DateUtil.format(new Date(), date_formate_role);
-					ImgUtil.gray(FileUtil.file(choice_path), FileUtil.file(save_path+"gray_"+date_now+".png"));
-					JOptionPane.showMessageDialog(null, "转换成功,图片保存在:"+save_path+"gray_"+date_now+".png");
+					ImgUtil.gray(FileUtil.file(choice_path), FileUtil.file(save_path+"/gray_"+date_now+".png"));
+					JOptionPane.showMessageDialog(null, "转换成功,图片保存在:"+save_path+"/gray_"+date_now+".png");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					JOptionPane.showMessageDialog(null, "无法转换非图片");
@@ -333,8 +333,8 @@ public class MonkeyPanel extends JPanel {
 				try {
 					String now_date=DateUtil.format(new  Date(), date_formate_role);
 					Image img=ClipboardUtil.getImage();
-					ImgUtil.gray(img, FileUtil.file(save_path+"gray_"+now_date+".png"));
-					JOptionPane.showMessageDialog(null, "转换成功,图片保存在:"+save_path+"gray_"+now_date+".png");
+					ImgUtil.gray(img, FileUtil.file(save_path+"/gray_"+now_date+".png"));
+					JOptionPane.showMessageDialog(null, "转换成功,图片保存在:"+save_path+"/gray_"+now_date+".png");
 				} catch (HeadlessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -584,11 +584,11 @@ public class MonkeyPanel extends JPanel {
 							resultStr = CollUtil.join((Iterator<Word>)result, " ");
 //							System.out.println(resultStr);
 							String date_now=DateUtil.format(new Date(),date_formate_role);
-							FileWriter writer = new FileWriter(choice_path+"split_"+date_now+".txt");
+							FileWriter writer = new FileWriter(choice_path+"/split_"+date_now+".txt");
 							for(String s:resultStr.split(" ")){
 									writer.append(s+"\r\n");
 							}
-							JOptionPane.showMessageDialog(null, "分词完成,文件保存在"+choice_path+"split_"+date_now+".txt");
+							JOptionPane.showMessageDialog(null, "分词完成,文件保存在"+choice_path+"/split_"+date_now+".txt");
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -626,7 +626,7 @@ public class MonkeyPanel extends JPanel {
 				}
 				try {
 					String date_now=DateUtil.format(new Date(), date_formate_role);
-					String Qr_img_path=choice_path+"QR_"+date_now+".jpg";
+					String Qr_img_path=choice_path+"/QR_"+date_now+".jpg";
 					QrCodeUtil.generate(txt_InputQrMsg.getText().trim(), 300, 300, FileUtil.file(Qr_img_path));
 					JOptionPane.showMessageDialog(null, "生成二维码成功,保存路径为"+Qr_img_path+"");
 				} catch (Exception e) {
