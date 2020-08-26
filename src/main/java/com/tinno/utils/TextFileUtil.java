@@ -25,17 +25,21 @@ public class TextFileUtil {
 	 */
 	public static class TextFileSearch {
 
-		public List<String> SearchKeyword(File file, String keyword) {
+		public Map<String,List<String>> SearchKeyword(File file, String keyword) {
 			// 参数校验
 			verifyParam(file, keyword);
 
 			// 行读取
 			LineNumberReader lineReader = null;
 			List<String> l = CollUtil.newArrayList();
+			List<String> count=CollUtil.newArrayList();
+			Map<String, List<String>> map=CollUtil.newHashMap();
+			String pkg="";
+			String activity="";
+			String exception="";
 			try {
 				lineReader = new LineNumberReader(new FileReader(file));
 				String readLine = null;
-
 				while ((readLine = lineReader.readLine()) != null) {
 					// 判断每一行中,出现关键词的次数
 					int index = 0;
@@ -47,9 +51,37 @@ public class TextFileUtil {
 						times++;
 					}
 					if (times > 0) {
-						// System.out.println("第" + lineReader.getLineNumber() +
-						// "行" + "出现 " + keyword + " 次数: " + times);
-						l.add("第" + lineReader.getLineNumber() + "行" + "出现 " + keyword + " 次数: " + times);
+						switch(keyword){
+						case "ANR":
+							pkg=readLine.split(" ")[2];
+							activity=readLine.split(" ")[3];
+							l.add("包名:"+pkg+" ,activity:"+activity+ " ,行号:"+lineReader.getLineNumber());
+							count.add(keyword+"--"+pkg);
+							break;
+						case "Exception":
+//							exception=readLine.split(" ")[3];
+							l.add("exception:\n"+readLine+ " ,行号:"+lineReader.getLineNumber());
+//							count.add(keyword+"--"+readLine);
+							break;
+						case "Null":
+							l.add("第" + lineReader.getLineNumber() + "行" + "出现 " + keyword + " 次数: " + times);
+							break;
+						case "Error":
+							l.add("第" + lineReader.getLineNumber() + "行" + "出现 " + keyword + " 次数: " + times);
+							break;
+						case "CRASH":
+							pkg=readLine.split(" ")[2];
+							l.add("包名:"+pkg+" ,行号:"+lineReader.getLineNumber());
+							count.add(keyword+"--"+pkg);
+							break;
+							default:
+								System.out.println("无关键字");
+								break;
+						}
+//						 System.out.println("第" + lineReader.getLineNumber() +
+//						 "行" + "出现 " + keyword + " 次数: " + times+"\tpkg:"+pkg);
+//						l.add("第" + lineReader.getLineNumber() + "行" + "出现 " + keyword + " 次数: " + times+" pkg:"+pkg);
+//						 l.add("包名:"+pkg+" ,行号:"+lineReader.getLineNumber());
 					}
 				}
 			} catch (IOException e) {
@@ -58,7 +90,9 @@ public class TextFileUtil {
 				// 关闭流
 				close(lineReader);
 			}
-			return l;
+			map.put("result", l);
+			map.put("count", count);
+			return map;
 		}
 
 		/**
@@ -101,84 +135,5 @@ public class TextFileUtil {
 				}
 			}
 		}
-
-	}
-
-	public static void main(String[] args) throws IOException {
-
-		// 1、获取map 的key，作为excel的行列，后面更新为读取关键字
-		FileReader fr = new FileReader(FileUtil.file("C:/Users/shusen.cui/Desktop/monkey_report/monkey_keywords.txt"));
-		BufferedReader br = new BufferedReader(fr);
-		String line = null;
-		// 关键字集合,读取关键字文本，或者界面上可操作，动态添加。
-		List<String> keywords_list = CollUtil.newArrayList();
-		while ((line = br.readLine()) != null) {
-			System.out.println(line);
-			keywords_list.add(line);
-		}
-		// System.out.println(keywords_list.toString());
-		// [ANR, Exceptio, Null, Error, CRASH]
-		
-		// 2、通过方法获取每种异常的集合
-		// excel行数据map
-		ArrayList<Map<String, Object>> rows = CollUtil.newArrayList();
-		boolean testresult=true;
-		TextFileSearch search = new TextFileSearch();
-		List<Integer> sortlist = CollUtil.newArrayList();
-		List<List<String>> allmsglist=CollUtil.newArrayList();
-		
-		for (int i = 0; i < keywords_list.size(); i++) {
-			List<String> msglist=search.SearchKeyword(FileUtil.file("C:/Users/shusen.cui/Desktop/monkey_report/monkey_error.txt"),keywords_list.get(i).toString());
-			sortlist.add(msglist.size());
-			allmsglist.add(msglist);
-			if(msglist.size()!=0){
-				testresult=false;
-			}
-		}
-		if(testresult){
-			Map<String, Object> row=new HashMap<String, Object>();
-			row.put("测试结果", "PASS");
-			rows.add(row);
-		}else{
-			// 排序，找到最大数，然后作为最大行数
-			Collections.sort(sortlist);
-			for (int j = 0; j < sortlist.get(sortlist.size() - 1); j++) {
-				Map<String, Object> row = new HashMap<String, Object>();
-				for (int k = 0; k < keywords_list.size(); k++) {
-					String value;
-					try {
-						value=allmsglist.get(k).get(j).toString();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-//						发生数组越界异常,就给那个单元格设置内容为空，
-						value="";
-					}
-					row.put(keywords_list.get(k).toString(),value);
-				}
-				rows.add(row);
-			}
-		}
-		
-//		生成的表格格式大概如下:
-		/*
-		
-						|Exception|Error|Anr|Crash|
-						———————————————————————————
-						|xxxxxxxxx|xxxx |xx | xx  |
-						———————————————————————————
-						|xx       |     |x  |   x |
-						———————————————————————————
-						|         |     |   |   x |
-						———————————————————————————
-						
-		*/
-		// 通过工具类创建writer
-		ExcelWriter writer = ExcelUtil.getWriter("e:/monkey_Result.xlsx");
-		// 合并单元格后的标题行，使用默认标题样式
-		writer.merge(keywords_list.size()-1, "monkey测试结果(若有异常,异常详情可用notepad++打开error.txt定位行数查看具体异常)");
-		// 一次性写出内容，使用默认样式，强制输出标题
-		writer.write(rows, true);
-		// 关闭writer，释放内存
-		writer.close();
 	}
 }
