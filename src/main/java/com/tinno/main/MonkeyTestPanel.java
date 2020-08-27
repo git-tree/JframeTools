@@ -1238,7 +1238,7 @@ public class MonkeyTestPanel extends JPanel {
 		btn_search_offLog.setBounds(552, 294, 105, 23);
 		add(btn_search_offLog);
 		
-		JButton btn_report_monkeyresult = new JButton("在线报告");
+		final JButton btn_report_monkeyresult = new JButton("在线报告");
 		btn_report_monkeyresult.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				//导出结果报告按钮
@@ -1247,11 +1247,22 @@ public class MonkeyTestPanel extends JPanel {
 					return;
 				}
 				if(monkey_dir_name==null||"".equals(monkey_dir_name)){
-					JFrameutil.showdialog("未找到error.txt文件");
+					JFrameutil.showdialog("未找到error.txt文件,若有现有error.txt请用【离线报告】按钮生成");
 					return;
 				}
-			
-				Reportutils.reportmonkey_result(monkey_dir_name);
+				new Thread(new Runnable() {
+					public void run() {
+						try {
+							btn_report_monkeyresult.setEnabled(false);
+							Reportutils.reportmonkey_result(monkey_dir_name);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}finally{
+							btn_report_monkeyresult.setEnabled(true);
+						}
+					}
+				}).start();
 				
 			}
 		});
@@ -1259,7 +1270,7 @@ public class MonkeyTestPanel extends JPanel {
 		btn_report_monkeyresult.setBounds(284, 294, 90, 23);
 		add(btn_report_monkeyresult);
 		
-		JButton btn_report_monkeyresult_1 = new JButton("离线报告");
+		final JButton btn_report_monkeyresult_1 = new JButton("离线报告");
 		btn_report_monkeyresult_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -1285,7 +1296,20 @@ public class MonkeyTestPanel extends JPanel {
 					}
 					else{
 						System.out.println(choicepath);
-						Reportutils.reportmonkey_result(choicepath);
+						new Thread(new  Runnable() {
+							public void run() {
+								
+								try {
+									btn_report_monkeyresult_1.setEnabled(false);
+									Reportutils.reportmonkey_result(choicepath);
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}finally{
+									btn_report_monkeyresult_1.setEnabled(true);
+								}
+							}
+						}).start();
 					}
 				}
 			}

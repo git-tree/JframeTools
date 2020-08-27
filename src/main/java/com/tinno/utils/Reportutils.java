@@ -128,7 +128,7 @@ public class Reportutils {
 					
 					if(countMap.get(key) >= 1){
 						k=key.split("--")[0];
-						System.out.println(key.split("--")[1]+"发生"+key.split("--")[0]+" "+countMap.get(key)+"次\n");
+//						System.out.println(key.split("--")[1]+"发生"+key.split("--")[0]+" "+countMap.get(key)+"次\n");
 						sb.append(key.split("--")[1]+"发生"+key.split("--")[0]+" "+countMap.get(key)+"次\n");
 					}
 				}
@@ -184,10 +184,5 @@ public class Reportutils {
 			// 关闭writer，释放内存
 			writer.close();
 		}
-		
-
-		
-		
-
 	}
 }

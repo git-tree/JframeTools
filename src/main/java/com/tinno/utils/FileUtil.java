@@ -55,12 +55,12 @@ public static Map<String,Integer> countRepeat(List<String> list){
 //    System.out.println("重复数据的个数："+map.toString());
 
 
-//    System.out.print("重复的数据为：");
-    for(String s:map.keySet()){
-        if(map.get(s) >= 1){
-//            System.out.println(s+" ");
-        }
-    }
+////    System.out.print("重复的数据为：");
+//    for(String s:map.keySet()){
+//        if(map.get(s) >= 1){
+////            System.out.println(s+" ");
+//        }
+//    }
     
     return map;
 }

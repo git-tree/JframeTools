@@ -37,6 +37,7 @@ public class TextFileUtil {
 			String pkg="";
 			String activity="";
 			String exception="";
+			int beginnum=0;
 			try {
 				lineReader = new LineNumberReader(new FileReader(file));
 				String readLine = null;
@@ -55,29 +56,40 @@ public class TextFileUtil {
 						case "ANR":
 							pkg=readLine.split(" ")[2];
 							activity=readLine.split(" ")[3];
-							l.add("包名:"+pkg+" ,activity:"+activity+ " ,行号:"+lineReader.getLineNumber());
+							l.add("包名:"+pkg+" ,\nActivity:"+activity+ " ,\n行号:"+lineReader.getLineNumber());
 							count.add(keyword+"--"+pkg);
+							beginnum=lineReader.getLineNumber();
 							break;
 						case "Exception":
 //							exception=readLine.split(" ")[3];
-							l.add("exception:\n"+readLine+ " ,行号:"+lineReader.getLineNumber());
+							if(lineReader.getLineNumber()-beginnum<=3){
+								l.add("exception:\n"+readLine+ " ,\n行号:"+lineReader.getLineNumber());
+							}
+							else{
+								beginnum=lineReader.getLineNumber();
+							}
 //							count.add(keyword+"--"+readLine);
 							break;
 						case "Null":
 							l.add("第" + lineReader.getLineNumber() + "行" + "出现 " + keyword + " 次数: " + times);
+							beginnum=lineReader.getLineNumber();
 							break;
 						case "Error":
 							l.add("第" + lineReader.getLineNumber() + "行" + "出现 " + keyword + " 次数: " + times);
+							beginnum=lineReader.getLineNumber();
 							break;
 						case "CRASH":
 							pkg=readLine.split(" ")[2];
-							l.add("包名:"+pkg+" ,行号:"+lineReader.getLineNumber());
+							l.add("包名:"+pkg+" ,\n行号:"+lineReader.getLineNumber());
 							count.add(keyword+"--"+pkg);
+							beginnum=lineReader.getLineNumber();
 							break;
 							default:
 								System.out.println("无关键字");
+								beginnum=lineReader.getLineNumber();
 								break;
 						}
+						
 //						 System.out.println("第" + lineReader.getLineNumber() +
 //						 "行" + "出现 " + keyword + " 次数: " + times+"\tpkg:"+pkg);
 //						l.add("第" + lineReader.getLineNumber() + "行" + "出现 " + keyword + " 次数: " + times+" pkg:"+pkg);
