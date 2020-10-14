@@ -131,7 +131,7 @@ public class MainForm extends JFrame {
 					// TODO exception
 				}
 				try {
-					if (CmdUtil.checkAdb() && CmdUtil.checkDevice_isconn()) {
+					if ( CmdUtil.checkDevice_isconn()) {
 						MainForm frame = new MainForm();
 						// 居中显示
 						frame.setLocationRelativeTo(null);
