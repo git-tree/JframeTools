@@ -219,7 +219,7 @@ public class CmdPanel extends JPanel {
 		frame_battery.getContentPane().add(btn_exeCmd_1);
 				
 				final JInternalFrame frame_screen = new JInternalFrame("屏幕相关");
-				frame_screen.setBounds(10, 10, 168, 141);
+				frame_screen.setBounds(10, 10, 168, 134);
 				panel_frames.add(frame_screen);
 				frame_screen.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 				frame_screen.setResizable(true);
@@ -284,18 +284,18 @@ public class CmdPanel extends JPanel {
 				frame_screen.getContentPane().add(panel_2);
 				panel_2.setLayout(null);
 				
-				JButton btn_choice_path_1 = new JButton("检查adb环境");
+				JButton btn_choice_path_1 = new JButton("检查设备是否连接");
 				btn_choice_path_1.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(CmdUtil.checkAdb()){
-							TextUtil.insertDocument("adb环境OK", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+						if(CmdUtil.checkDevice_isconn()){
+							TextUtil.insertDocument("已连接", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 						}else{
-							TextUtil.insertDocument("adb环境异常，请检查", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
+							TextUtil.insertDocument("未连接，请检查", ColorEnum.SUCCESSCOLOR.getColor(), txt_show, ColorEnum.ERRORCOLOR.getColor());
 						}
 					}
 				});
 				btn_choice_path_1.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-				btn_choice_path_1.setBounds(160, 10, 110, 23);
+				btn_choice_path_1.setBounds(160, 10, 141, 23);
 				panel_2.add(btn_choice_path_1);
 				
 				txt_screenOn_time = new JTextField();
